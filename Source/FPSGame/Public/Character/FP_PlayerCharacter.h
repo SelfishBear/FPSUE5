@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Component/Character/FP_CustomCharacterMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "FP_PlayerCharacter.generated.h"
 
+class UFP_CustomCharacterMovementComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class UInputAction;
@@ -17,7 +19,9 @@ class FPSGAME_API AFP_PlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	AFP_PlayerCharacter();
+	AFP_PlayerCharacter(const FObjectInitializer& ObjectInitializer);
+	
+	FORCEINLINE UFP_CustomCharacterMovementComponent* GetCustomMovementComponent() const { return CustomMovementComponent; }
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> FPSRoot;
@@ -49,26 +53,25 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> SprintAction;
+	
+	UPROPERTY()
+	TObjectPtr<UFP_CustomCharacterMovementComponent> CustomMovementComponent;
+	
+	UFUNCTION(BlueprintCallable, Category = "Player|Movement")
+	FORCEINLINE bool GetSprintIntention() const { return bWantsToSprint && !GetVelocity().IsNearlyZero(); }
 
 protected:
 	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
-	/** Movement speeds */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	float WalkSpeed = 600.f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	float SprintSpeed = 1200.f;
-
+	
 private:
+	bool bWantsToSprint = false;
+	
 	/** Input Handlers */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	
+
 	void StartSprinting();
 	void StopSprinting();
 };
