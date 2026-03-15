@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "FP_CustomCharacterMovementComponent.generated.h"
+#include "FP_CharacterMovementComponent.generated.h"
 
 
 struct FInputActionValue;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FMovementSettings
 {
 	GENERATED_BODY()
@@ -21,20 +21,32 @@ struct FMovementSettings
 	float SprintSpeed = 600.0f;
 };
 
+USTRUCT(BlueprintType)
+struct FMovementState
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	bool bSprinting = false;
+};
+
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class FPSGAME_API UFP_CustomCharacterMovementComponent : public UCharacterMovementComponent
+class FPSGAME_API UFP_CharacterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
 public:
-	UFP_CustomCharacterMovementComponent();
+	UFP_CharacterMovementComponent();
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	FMovementSettings MovementSettings;
+
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	FMovementState State;
 	
 	/** Input Handlers */
 	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
 
 	void StartSprinting();
 	void StopSprinting();

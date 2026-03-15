@@ -3,61 +3,46 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Component/Character/FP_CustomCharacterMovementComponent.h"
+#include "FP_BaseCharacter.h"
+#include "Component/Character/FP_CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "FP_PlayerCharacter.generated.h"
 
-class UFP_CustomCharacterMovementComponent;
+class UFP_CharacterMovementComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class FPSGAME_API AFP_PlayerCharacter : public ACharacter
+class FPSGAME_API AFP_PlayerCharacter : public AFP_BaseCharacter
 {
 	GENERATED_BODY()
 
 public:
 	AFP_PlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
-	FORCEINLINE UFP_CustomCharacterMovementComponent* GetCustomMovementComponent() const { return CustomMovementComponent; }
+protected:
+	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Player|Movement")
-	FORCEINLINE bool GetSprintIntention() const { return bWantsToSprint && !GetVelocity().IsNearlyZero(); }
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> FPSRoot;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> CameraRoot;
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<USceneComponent> CameraOffset;
-
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UCameraComponent> Camera;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<USpringArmComponent> MeshRoot;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<USceneComponent> MeshOffset;
-
 
 	/** Input Actions */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
 
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
-
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> JumpAction;
@@ -65,17 +50,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> SprintAction;
 
-	UPROPERTY()
-	TObjectPtr<UFP_CustomCharacterMovementComponent> CustomMovementComponent;
-
-protected:
-	virtual void BeginPlay() override;
-
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
 private:
-	bool bWantsToSprint = false;
-
 	/** Input Handlers */
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
