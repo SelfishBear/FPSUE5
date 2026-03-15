@@ -11,11 +11,25 @@ AFP_PlayerCharacter::AFP_PlayerCharacter(const FObjectInitializer& ObjectInitial
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	FPSRoot = CreateDefaultSubobject<USceneComponent>(TEXT("FPSRoot"));
+	FPSRoot->SetupAttachment(GetRootComponent());
+
 	CameraRoot = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraRoot"));
 	CameraRoot->SetupAttachment(FPSRoot);
 
+	CameraOffsetRoot = CreateDefaultSubobject<USceneComponent>(TEXT("CameraOffsetRoot"));
+	CameraOffsetRoot->SetupAttachment(CameraRoot);
+
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(CameraRoot);
+	Camera->SetupAttachment(CameraOffsetRoot);
+
+	MeshRoot = CreateDefaultSubobject<USpringArmComponent>(TEXT("MeshRoot"));
+	MeshRoot->SetupAttachment(FPSRoot);
+
+	MeshOffsetRoot = CreateDefaultSubobject<USceneComponent>(TEXT("MeshOffsetRoot"));
+	MeshOffsetRoot->SetupAttachment(MeshRoot);
+
+	GetMesh()->SetupAttachment(MeshOffsetRoot);
 }
 
 void AFP_PlayerCharacter::BeginPlay()
@@ -44,7 +58,7 @@ void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void AFP_PlayerCharacter::Move(const FInputActionValue& Value)
 {
 	if (!IsValid(FP_MovementComponent)) return;
-	
+
 	FP_MovementComponent->Move(Value);
 }
 
@@ -61,13 +75,15 @@ void AFP_PlayerCharacter::Look(const FInputActionValue& Value)
 void AFP_PlayerCharacter::StartSprinting()
 {
 	if (!IsValid(FP_MovementComponent)) return;
-	
+
+	if (GetVelocity().IsNearlyZero()) return;
+
 	FP_MovementComponent->StartSprinting();
 }
 
 void AFP_PlayerCharacter::StopSprinting()
 {
 	if (!IsValid(FP_MovementComponent)) return;
-	
+
 	FP_MovementComponent->StopSprinting();
 }
