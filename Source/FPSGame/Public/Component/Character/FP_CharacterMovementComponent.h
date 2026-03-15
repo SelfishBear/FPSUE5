@@ -9,14 +9,23 @@
 
 struct FInputActionValue;
 
+UENUM(BlueprintType)
+enum class EMovementDirection : uint8
+{
+	Forward  UMETA(DisplayName = "Forward"),
+	Backward UMETA(DisplayName = "Backward"),
+	Left     UMETA(DisplayName = "Left"),
+	Right    UMETA(DisplayName = "Right"),
+};
+
 USTRUCT(BlueprintType)
 struct FMovementSettings
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float WalkSpeed = 300.0f;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float SprintSpeed = 600.0f;
 };
@@ -30,20 +39,22 @@ struct FMovementState
 	bool bSprinting = false;
 };
 
-
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class FPSGAME_API UFP_CharacterMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
 public:
 	UFP_CharacterMovementComponent();
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	FMovementSettings MovementSettings;
 
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	FMovementState State;
+
+	UFUNCTION(BlueprintPure, Category = "Movement")
+	EMovementDirection GetMovementDirection() const;
 	
 	/** Input Handlers */
 	void Move(const FInputActionValue& Value);

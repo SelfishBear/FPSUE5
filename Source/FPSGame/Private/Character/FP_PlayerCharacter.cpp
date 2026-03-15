@@ -4,6 +4,7 @@
 #include "FPSGame/Public/Character/FP_PlayerCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Component/Camera/FP_DynamicCameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 AFP_PlayerCharacter::AFP_PlayerCharacter(const FObjectInitializer& ObjectInitializer)
@@ -30,6 +31,8 @@ AFP_PlayerCharacter::AFP_PlayerCharacter(const FObjectInitializer& ObjectInitial
 	MeshOffsetRoot->SetupAttachment(MeshRoot);
 
 	GetMesh()->SetupAttachment(MeshOffsetRoot);
+	
+	DynamicCameraComponent = CreateDefaultSubobject<UFP_DynamicCameraComponent>(TEXT("DynamicCameraComponent"));
 }
 
 void AFP_PlayerCharacter::BeginPlay()
@@ -78,6 +81,7 @@ void AFP_PlayerCharacter::StartSprinting()
 
 	if (GetVelocity().IsNearlyZero()) return;
 
+	DynamicCameraComponent->IncreaseFov();
 	FP_MovementComponent->StartSprinting();
 }
 
@@ -85,5 +89,6 @@ void AFP_PlayerCharacter::StopSprinting()
 {
 	if (!IsValid(FP_MovementComponent)) return;
 
+	DynamicCameraComponent->DecreaseFov();
 	FP_MovementComponent->StopSprinting();
 }

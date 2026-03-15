@@ -57,3 +57,24 @@ void UFP_CharacterMovementComponent::StopSprinting()
 	
 	MaxWalkSpeed = MovementSettings.WalkSpeed;
 }
+
+EMovementDirection UFP_CharacterMovementComponent::GetMovementDirection() const
+{
+	if (!CharacterOwner) return EMovementDirection::Forward;
+
+	const FVector CharacterVelocity = CharacterOwner->GetVelocity().GetSafeNormal2D();
+	if (CharacterVelocity.IsNearlyZero()) return EMovementDirection::Forward;
+
+	const FVector Forward = CharacterOwner->GetActorForwardVector();
+	const FVector Right   = CharacterOwner->GetActorRightVector();
+
+	const float ForwardDot = FVector::DotProduct(Forward, CharacterVelocity);
+	const float RightDot   = FVector::DotProduct(Right,   CharacterVelocity);
+
+	if (FMath::Abs(ForwardDot) >= FMath::Abs(RightDot))
+	{
+		return ForwardDot >= 0.f ? EMovementDirection::Forward : EMovementDirection::Backward;
+	}
+	return RightDot >= 0.f ? EMovementDirection::Right : EMovementDirection::Left;
+}
+

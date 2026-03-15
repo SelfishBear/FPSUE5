@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "FP_PlayerCharacter.generated.h"
 
+class UFP_DynamicCameraComponent;
 class UFP_CharacterMovementComponent;
 class UCameraComponent;
 class USpringArmComponent;
@@ -21,13 +22,17 @@ class FPSGAME_API AFP_PlayerCharacter : public AFP_BaseCharacter
 
 public:
 	AFP_PlayerCharacter(const FObjectInitializer& ObjectInitializer);
+	
+	/* Getters */
+	UFUNCTION(BlueprintPure) 
+	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
 
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
-protected:
+	
+	/** Components */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> FPSRoot;
 
@@ -45,7 +50,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> MeshOffsetRoot;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UFP_DynamicCameraComponent> DynamicCameraComponent;
+	
 	/** Input Actions */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
