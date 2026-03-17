@@ -21,12 +21,11 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_CharacterMovementComponent> FP_MovementComponent;
-
 
 public:
 	/* Getters */
-	UFUNCTION(BlueprintPure) FORCEINLINE UFP_CharacterMovementComponent*
-		GetFP_MovementComponent() const { return FP_MovementComponent; }
+	UFUNCTION(BlueprintPure) 
+	FORCEINLINE UFP_CharacterMovementComponent* GetFP_MovementComponent() const { return FP_MovementComponent; }
 };

@@ -70,6 +70,8 @@ EMovementDirection UFP_CharacterMovementComponent::GetMovementDirection() const
 
 	const float ForwardDot = FVector::DotProduct(Forward, CharacterVelocity);
 	const float RightDot   = FVector::DotProduct(Right,   CharacterVelocity);
+	
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("ForwardDot: %f, RightDot: %f"), ForwardDot, RightDot));
 
 	if (FMath::Abs(ForwardDot) >= FMath::Abs(RightDot))
 	{

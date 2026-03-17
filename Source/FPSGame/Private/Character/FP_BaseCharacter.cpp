@@ -10,15 +10,14 @@ AFP_BaseCharacter::AFP_BaseCharacter(const FObjectInitializer& ObjectInitializer
 											   UFP_CharacterMovementComponent::StaticClass()))
 {
 	PrimaryActorTick.bCanEverTick = false;
-	
+
+	FP_MovementComponent = Cast<UFP_CharacterMovementComponent>(GetCharacterMovement());
+	check(FP_MovementComponent);
 }
 
 void AFP_BaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	FP_MovementComponent = Cast<UFP_CharacterMovementComponent>(GetCharacterMovement());
-	
 }
 
 void AFP_BaseCharacter::Tick(float DeltaTime)

@@ -26,6 +26,9 @@ public:
 	/* Getters */
 	UFUNCTION(BlueprintPure) 
 	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
+	
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE USceneComponent* GetCameraOffsetRoot() const { return CameraOffsetRoot; }
 
 protected:
 	virtual void BeginPlay() override;

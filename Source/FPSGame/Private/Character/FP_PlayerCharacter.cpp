@@ -80,6 +80,8 @@ void AFP_PlayerCharacter::StartSprinting()
 	if (!IsValid(FP_MovementComponent)) return;
 
 	if (GetVelocity().IsNearlyZero()) return;
+	
+	if (GetActorForwardVector().Dot(GetVelocity().GetSafeNormal()) < 0.5f) return;
 
 	DynamicCameraComponent->IncreaseFov();
 	FP_MovementComponent->StartSprinting();
