@@ -75,25 +75,27 @@ public:
 	UFP_DynamicCameraComponent();
 
 protected:
+	virtual void Init();
+	
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	bool TrySetFov(float DeltaTime);
+	virtual bool TrySetFov(float DeltaTime);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Camera|FOV")
-	void IncreaseFov();
+	virtual void IncreaseFov();
 
 	UFUNCTION(BlueprintCallable, Category = "Camera|FOV")
-	void DecreaseFov();
+	virtual void DecreaseFov();
 
 	UFUNCTION(BlueprintCallable, Category = "Camera|FOV")
-	void HandleCameraTilt(float DeltaTime);
+	virtual void HandleCameraTilt(float DeltaTime);
 	
 	UFUNCTION(BlueprintCallable, Category = "Camera|FOV")
-	void HandleCameraBobbing(float DeltaTime);
+	virtual void HandleCameraBobbing(float DeltaTime);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Camera|FOV")
@@ -114,7 +116,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera|Tilt")
 	FBobbingSettings BobbingSettings;
 
-private:
+protected:
 	float TargetFov = 90.0f;
 	float TargetTilt = 0.0f;
 	
@@ -128,5 +130,5 @@ private:
 	void GetPlayerCharacterMovementComponent();
 	void GetCameraOffsetRoot();
 
-	void SetupFov();
+	virtual void SetupFov();
 };

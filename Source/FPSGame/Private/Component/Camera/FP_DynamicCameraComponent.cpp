@@ -10,14 +10,19 @@ UFP_DynamicCameraComponent::UFP_DynamicCameraComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UFP_DynamicCameraComponent::BeginPlay()
+void UFP_DynamicCameraComponent::Init()
 {
-	Super::BeginPlay();
-
 	GetPlayerCharacterMovementComponent();
 	GetPlayerCamera();
 	GetCameraOffsetRoot();
 	SetupFov();
+}
+
+void UFP_DynamicCameraComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Init();
 }
 
 void UFP_DynamicCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType,
