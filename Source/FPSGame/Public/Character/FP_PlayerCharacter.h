@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "FP_BaseCharacter.h"
 #include "Component/Character/FP_CharacterMovementComponent.h"
-#include "GameFramework/Character.h"
 #include "FP_PlayerCharacter.generated.h"
 
 class UFP_DynamicCameraComponent;
 class UFP_CharacterMovementComponent;
+class UFP_EquipmentManager;
 class UCameraComponent;
 class USpringArmComponent;
 class UInputAction;
@@ -29,6 +29,9 @@ public:
 	
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE USceneComponent* GetCameraOffsetRoot() const { return CameraOffsetRoot; }
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE UFP_EquipmentManager* GetEquipmentManager() const { return EquipmentManager; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -56,6 +59,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_DynamicCameraComponent> DynamicCameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UFP_EquipmentManager> EquipmentManager;
 	
 	/** Input Actions */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
@@ -70,6 +76,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> SprintAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> FireAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> ReloadAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> SwitchWeaponAction;
+
 private:
 	/** Input Handlers */
 	void Move(const FInputActionValue& Value);
@@ -77,4 +92,9 @@ private:
 
 	void StartSprinting();
 	void StopSprinting();
+
+	void StartFire();
+	void StopFire();
+	void HandleReload();
+	void HandleSwitchWeapon();
 };
