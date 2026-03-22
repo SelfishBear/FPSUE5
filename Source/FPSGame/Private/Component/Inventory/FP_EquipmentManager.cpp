@@ -8,6 +8,7 @@
 #include "DataAsset/Weapon/FP_WeaponDataAsset.h"
 #include "Character/FP_BaseCharacter.h"
 #include "Engine/Engine.h"
+#include "Utils/FP_Sockets.h"
 
 UFP_EquipmentManager::UFP_EquipmentManager()
 {
@@ -23,113 +24,26 @@ void UFP_EquipmentManager::BeginPlay()
 
 void UFP_EquipmentManager::GiveStartingWeapons()
 {
-	if (StartingPrimaryData)
-	{
-		AddWeapon(StartingPrimaryData);
-	}
-
-	if (StartingSecondaryData)
-	{
-		AddWeapon(StartingSecondaryData);
-	}
-
-	if (WeaponSlots.Contains(EWeaponSlot::Primary))
-	{
-		EquipFromSlot(EWeaponSlot::Primary);
-	}
-	else if (WeaponSlots.Contains(EWeaponSlot::Secondary))
-	{
-		EquipFromSlot(EWeaponSlot::Secondary);
-	}
-}
-
-void UFP_EquipmentManager::AddWeapon(UFP_WeaponDataAsset* WeaponDataAsset)
-{
-	if (!IsValid(WeaponDataAsset)) return;
-
 	AFP_BaseCharacter* OwnerCharacter = Cast<AFP_BaseCharacter>(GetOwner());
 	if (!IsValid(OwnerCharacter)) return;
 
-	const EWeaponSlot Slot = WeaponDataAsset->WeaponSlot;
-
-	if (WeaponSlots.Contains(Slot))
+	if (IsValid(StartingPrimaryData))
 	{
-		UFP_WeaponBase* OldWeapon = WeaponSlots[Slot];
-		if (OldWeapon)
-		{
-			OldWeapon->StopFire();
-		}
-
-		if (ActiveSlot == Slot)
-		{
-			UnequipCurrent();
-		}
+		UFP_WeaponBase* Primary = CreateLogic(StartingPrimaryData, OwnerCharacter);
+		EquippedWeapons.Add(Primary);
 	}
 
-	UFP_WeaponBase* NewWeapon = CreateLogic(WeaponDataAsset, OwnerCharacter);
-	WeaponSlots.Add(Slot, NewWeapon);
-}
-
-void UFP_EquipmentManager::SwitchWeapon(EWeaponSlot Slot)
-{
-	if (Slot == ActiveSlot) return;
-	if (!WeaponSlots.Contains(Slot)) return;
-
-	UnequipCurrent();
-	EquipFromSlot(Slot);
-}
-
-void UFP_EquipmentManager::EquipFromSlot(EWeaponSlot Slot)
-{
-	TObjectPtr<UFP_WeaponBase>* FoundWeapon = WeaponSlots.Find(Slot);
-	if (!FoundWeapon || !IsValid(*FoundWeapon)) return;
-
-	AFP_BaseCharacter* OwnerCharacter = Cast<AFP_BaseCharacter>(GetOwner());
-	if (!IsValid(OwnerCharacter)) return;
-
-	ActiveSlot = Slot;
-
-	UFP_WeaponBase* Weapon = *FoundWeapon;
-
-	if (Weapon->WeaponData)
+	if (IsValid(StartingSecondaryData))
 	{
-		ActiveVisual = CreateVisual(Weapon->WeaponData, OwnerCharacter);
-
-		if (ActiveVisual)
-		{
-			ActiveVisual->Initialize(Weapon);
-		}
+		UFP_WeaponBase* Secondary = CreateLogic(StartingSecondaryData, OwnerCharacter);
+		EquippedWeapons.Add(Secondary);
 	}
 
-	if (GEngine)
+	if (EquippedWeapons.Num() > 0)
 	{
-		const FString SlotName = (Slot == EWeaponSlot::Primary) ? TEXT("Primary") : TEXT("Secondary");
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green,
-			FString::Printf(TEXT("Equipped [%s]: %s"), *SlotName, *Weapon->WeaponData->WeaponName.ToString()));
+		EquipByIndex(0);
 	}
 }
-
-void UFP_EquipmentManager::UnequipCurrent()
-{
-	UFP_WeaponBase* CurrentWeapon = GetCurrentWeapon();
-	if (CurrentWeapon)
-	{
-		CurrentWeapon->StopFire();
-	}
-
-	if (ActiveVisual)
-	{
-		ActiveVisual->Destroy();
-		ActiveVisual = nullptr;
-	}
-}
-
-UFP_WeaponBase* UFP_EquipmentManager::GetCurrentWeapon() const
-{
-	const TObjectPtr<UFP_WeaponBase>* Found = WeaponSlots.Find(ActiveSlot);
-	return Found ? Found->Get() : nullptr;
-}
-
 
 UFP_WeaponBase* UFP_EquipmentManager::CreateLogic(UFP_WeaponDataAsset* WeaponDataAsset,
                                                   AFP_BaseCharacter* OwnerCharacter)
@@ -168,15 +82,72 @@ AFP_WeaponVisualBase* UFP_EquipmentManager::CreateVisual(UFP_WeaponDataAsset* We
 
 	if (!IsValid(NewVisual)) return nullptr;
 
+	FName AttachSocket = AttachWeaponTo(CurrentWeapon);
+
 	FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
 	USkeletalMeshComponent* CharMesh = OwnerCharacter->GetMesh();
 
-	if (CharMesh && CharMesh->DoesSocketExist(FName("WeaponHoldSocket")))
+
+	if (IsValid(CharMesh) && CharMesh->DoesSocketExist(AttachSocket))
 	{
-		NewVisual->AttachToComponent(CharMesh, AttachRules, FName("WeaponHoldSocket"));
+		NewVisual->AttachToComponent(CharMesh, AttachRules, AttachSocket);
 	}
 
 	return NewVisual;
+}
+
+void UFP_EquipmentManager::EquipByIndex(int32 Index)
+{
+	if (!EquippedWeapons.IsValidIndex(Index)) return;
+	if (Index == CurrentWeaponIndex && IsValid(CurrentWeapon)) return;
+
+	UnequipCurrent();
+
+	CurrentWeaponIndex = Index;
+	CurrentWeapon = EquippedWeapons[Index];
+
+	EquipCurrent();
+}
+
+void UFP_EquipmentManager::EquipCurrent()
+{
+	if (!IsValid(CurrentWeapon) || !IsValid(CurrentWeapon->WeaponData)) return;
+
+	AFP_BaseCharacter* OwnerCharacter = Cast<AFP_BaseCharacter>(GetOwner());
+	if (!IsValid(OwnerCharacter)) return;
+
+	CurrentVisual = CreateVisual(CurrentWeapon->WeaponData, OwnerCharacter);
+}
+
+void UFP_EquipmentManager::UnequipCurrent()
+{
+	if (IsValid(CurrentVisual))
+	{
+		CurrentVisual->Destroy();
+		CurrentVisual = nullptr;
+	}
+
+	CurrentWeapon = nullptr;
+}
+
+void UFP_EquipmentManager::SwitchByDirection(int32 Direction)
+{
+	if (Direction == 0 || EquippedWeapons.Num() == 0) return;
+
+	int32 NewIndex = (CurrentWeaponIndex + Direction) % EquippedWeapons.Num();
+	if (NewIndex < 0) NewIndex += EquippedWeapons.Num();
+
+	EquipByIndex(NewIndex);
+}
+
+FName UFP_EquipmentManager::AttachWeaponTo(UFP_WeaponBase* Weapon)
+{
+	switch (Weapon->WeaponData->WeaponSlot)
+	{
+	case EWeaponSlot::Primary: return FP_Sockets::PrimaryWeaponSocket;
+	case EWeaponSlot::Secondary: return FP_Sockets::SecondaryWeaponSocket;
+	default: return NAME_None;
+	}
 }
 
 

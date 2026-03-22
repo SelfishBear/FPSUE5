@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DataAsset/Weapon/FP_WeaponDataAsset.h"
 #include "UObject/Object.h"
 #include "Weapon/WeaponTypes/FP_WeaponTypes.h"
 #include "FP_WeaponBase.generated.h"
@@ -42,14 +43,17 @@ public:
 	void StopFire();
 
 	void Reload();
-	
+	void FinishReload();
+
+	void PerformFireLogic();
+
 	void PrintDebugMessage(FHitResult HitResult, bool bHit);
 
 	/* Virtual Methods */
 	virtual void PerformFire();
 
 	virtual void ConsumeAmmo();
-	
+
 	/* Getters */
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE AFP_BaseCharacter* GetOwningCharacter() const { return OwningCharacter.Get(); }
@@ -72,10 +76,16 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE EFireMode GetCurrentFireMode() const { return CurrentFireMode; }
 
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	FORCEINLINE EWeaponSlot GetWeaponSlot() const { return WeaponData->WeaponSlot; }
+
 	virtual UWorld* GetWorld() const override;
 
 protected:
 	virtual bool MakeTrace(FHitResult& OutHitResult) const;
+	
+	bool TryPlayFireMontage();
+	bool TryPlayReloadMontage();
 
 	FTimerHandle FireTimerHandle;
 

@@ -47,4 +47,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	TSubclassOf<UFP_WeaponBase> WeaponLogicClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animations")
+	TObjectPtr<UAnimMontage> FireMontage;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animations")
+	TObjectPtr<UAnimMontage> ReloadMontage;
 };

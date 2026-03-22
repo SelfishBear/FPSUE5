@@ -65,7 +65,11 @@ void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::HandleReload);
 
-	EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::HandleSwitchWeapon);
+	EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Triggered, this,
+	                          &AFP_PlayerCharacter::HandleSwitchWeaponAction);
+
+	EnhancedInput->BindAction(ScrollWeaponAction, ETriggerEvent::Triggered, this,
+	                          &AFP_PlayerCharacter::HandleScrollWeapon);
 }
 
 void AFP_PlayerCharacter::Move(const FInputActionValue& Value)
@@ -108,7 +112,7 @@ void AFP_PlayerCharacter::StopSprinting()
 void AFP_PlayerCharacter::StartFire()
 {
 	if (!IsValid(EquipmentManager)) return;
-	
+
 	EquipmentManager->StartFire();
 }
 
@@ -126,14 +130,37 @@ void AFP_PlayerCharacter::HandleReload()
 	EquipmentManager->Reload();
 }
 
-void AFP_PlayerCharacter::HandleSwitchWeapon()
+void AFP_PlayerCharacter::HandleSwitchWeaponAction(const FInputActionValue& Value)
 {
 	if (!IsValid(EquipmentManager)) return;
 
-	const EWeaponSlot NewSlot = (EquipmentManager->GetActiveSlot() == EWeaponSlot::Primary)
-		? EWeaponSlot::Secondary
-		: EWeaponSlot::Primary;
+	const int32 Index = FMath::RoundToInt32(Value.Get<float>());
 
-	EquipmentManager->SwitchWeapon(NewSlot);
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,
+	                                 FString::Printf(TEXT("Switching to weapon index: %d"), Index));
+
+	switch (Index)
+	{
+	case 1:
+		EquipmentManager->EquipByIndex(0);
+		break;
+	case 2:
+		EquipmentManager->EquipByIndex(1);
+		break;
+	default: ;
+	}
 }
 
+void AFP_PlayerCharacter::HandleScrollWeapon(const FInputActionValue& Value)
+{
+	if (!IsValid(EquipmentManager)) return;
+
+	const float Axis = Value.Get<float>();
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue,
+	                                 FString::Printf(TEXT("Scrolling weapon with axis value: %f"), Axis));
+
+	if (FMath::IsNearlyZero(Axis)) return;
+
+	EquipmentManager->SwitchByDirection(Axis > 0.f ? 1 : -1);
+}

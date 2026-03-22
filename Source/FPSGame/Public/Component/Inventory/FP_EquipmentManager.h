@@ -19,31 +19,31 @@ class FPSGAME_API UFP_EquipmentManager : public UActorComponent
 
 public:
 	UFP_EquipmentManager();
-
-	void AddWeapon(UFP_WeaponDataAsset* WeaponDataAsset);
-
-	void SwitchWeapon(EWeaponSlot Slot);
-
+	
 	void StartFire();
 	void StopFire();
 	void Reload();
 
-	UFUNCTION(BlueprintPure, Category = "Weapon")
-	UFP_WeaponBase* GetCurrentWeapon() const;
+	void EquipByIndex(int32 Index);
+	void SwitchByDirection(int32 Direction);
+	
+	FName AttachWeaponTo(UFP_WeaponBase* Weapon);
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
-	AFP_WeaponVisualBase* GetCurrentVisual() const { return ActiveVisual; }
+	FORCEINLINE UFP_WeaponBase* GetCurrentWeapon() const { return CurrentWeapon; }; 
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
-	EWeaponSlot GetActiveSlot() const { return ActiveSlot; }
+	FORCEINLINE AFP_WeaponVisualBase* GetCurrentVisual() const { return CurrentVisual; }
+	
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	FORCEINLINE int32 GetCurrentWeaponIndex() const { return CurrentWeaponIndex; }
 
 protected:
 	virtual void BeginPlay() override;
 
 	void GiveStartingWeapons();
 
-	void EquipFromSlot(EWeaponSlot Slot);
-
+	void EquipCurrent();
 	void UnequipCurrent();
 
 	UFP_WeaponBase* CreateLogic(UFP_WeaponDataAsset* WeaponDataAsset, AFP_BaseCharacter* OwnerCharacter);
@@ -56,10 +56,13 @@ protected:
 	TObjectPtr<UFP_WeaponDataAsset> StartingSecondaryData;
 
 	UPROPERTY()
-	TMap<EWeaponSlot, TObjectPtr<UFP_WeaponBase>> WeaponSlots;
-
-	EWeaponSlot ActiveSlot = EWeaponSlot::Primary;
-
+	TArray<UFP_WeaponBase*> EquippedWeapons;
+	
 	UPROPERTY()
-	TObjectPtr<AFP_WeaponVisualBase> ActiveVisual;
+	TObjectPtr<AFP_WeaponVisualBase> CurrentVisual;
+	
+	UPROPERTY()
+	TObjectPtr<UFP_WeaponBase> CurrentWeapon;
+	
+	int32 CurrentWeaponIndex = 0;
 };

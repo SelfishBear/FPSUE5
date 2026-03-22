@@ -85,6 +85,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> SwitchWeaponAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> ScrollWeaponAction;
+
 private:
 	/** Input Handlers */
 	void Move(const FInputActionValue& Value);
@@ -96,5 +99,6 @@ private:
 	void StartFire();
 	void StopFire();
 	void HandleReload();
-	void HandleSwitchWeapon();
+	void HandleSwitchWeaponAction(const FInputActionValue& Value);
+	void HandleScrollWeapon(const FInputActionValue& Value);
 };

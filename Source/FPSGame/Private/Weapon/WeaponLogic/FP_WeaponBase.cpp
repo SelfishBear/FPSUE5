@@ -72,6 +72,20 @@ void UFP_WeaponBase::StopFire()
 	}
 }
 
+bool UFP_WeaponBase::TryPlayReloadMontage()
+{
+	AFP_BaseCharacter* OwnerCharacter = GetOwningCharacter();
+	if (!IsValid(OwnerCharacter)) return false;
+
+	UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	if (!IsValid(AnimInstance) || !IsValid(WeaponData->ReloadMontage)) return false;
+
+	bCanFire = false;
+
+	AnimInstance->Montage_Play(WeaponData->ReloadMontage);
+	return true;
+}
+
 void UFP_WeaponBase::Reload()
 {
 	if (CurrentState == EWeaponState::Reloading || CurrentAmmo >= WeaponData->MaxAmmo || CurrentReserveAmmo <= 0)
@@ -79,11 +93,19 @@ void UFP_WeaponBase::Reload()
 
 	CurrentState = EWeaponState::Reloading;
 
-	const float NewAmmo = WeaponData->MaxAmmo - CurrentAmmo;
-	CurrentReserveAmmo -= NewAmmo;
-	CurrentAmmo += NewAmmo;
+	if (!TryPlayReloadMontage()) return;
+}
 
+void UFP_WeaponBase::FinishReload()
+{
+	if (CurrentState != EWeaponState::Reloading || !IsValid(WeaponData)) return;
+
+	const float NeededAmmo = WeaponData->MaxAmmo - CurrentAmmo;
+	const float AmmoToAdd = FMath::Min(NeededAmmo, CurrentReserveAmmo);
+	CurrentReserveAmmo -= AmmoToAdd;
+	CurrentAmmo += AmmoToAdd;
 	CurrentState = EWeaponState::Idle;
+	bCanFire = true;
 }
 
 void UFP_WeaponBase::ConsumeAmmo()
@@ -158,13 +180,33 @@ bool UFP_WeaponBase::MakeTrace(FHitResult& OutHitResult) const
 	return bHit;
 }
 
+bool UFP_WeaponBase::TryPlayFireMontage()
+{
+	AFP_BaseCharacter* OwnerCharacter = GetOwningCharacter();
+	if (!IsValid(OwnerCharacter)) return false;
+	
+	UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
+	if (!IsValid(AnimInstance) || !IsValid(WeaponData->FireMontage)) return false;
+	
+	AnimInstance->Montage_Play(WeaponData->FireMontage);
+	return true;
+}
+
 void UFP_WeaponBase::PerformFire()
+{
+	if (!IsValid(WeaponData)) return;
+	
+	TryPlayFireMontage();
+}
+
+void UFP_WeaponBase::PerformFireLogic()
 {
 	if (!IsValid(WeaponData)) return;
 
 	FHitResult HitResult;
 	const bool bHit = MakeTrace(HitResult);
 
+	ConsumeAmmo();
 	PrintDebugMessage(HitResult, bHit);
 }
 
@@ -177,7 +219,6 @@ void UFP_WeaponBase::HandleFireTimer()
 	}
 
 	PerformFire();
-	ConsumeAmmo();
 
 	switch (CurrentFireMode)
 	{
