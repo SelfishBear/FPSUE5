@@ -7,6 +7,9 @@
 #include "Weapon/WeaponTypes/FP_WeaponTypes.h"
 #include "FP_EquipmentManager.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponAmmoChanged, UFP_WeaponBase*, NewWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponEquiped, UFP_WeaponBase*, NewWeapon);
+
 class UFP_WeaponBase;
 class UFP_WeaponDataAsset;
 class AFP_WeaponVisualBase;
@@ -37,6 +40,12 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE int32 GetCurrentWeaponIndex() const { return CurrentWeaponIndex; }
+	
+	UPROPERTY(BlueprintAssignable, Category = "Weapon|Events")
+	FOnWeaponAmmoChanged OnWeaponAmmoChanged;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Weapon|Events")
+	FOnWeaponEquiped OnWeaponEquipped;
 
 protected:
 	virtual void BeginPlay() override;
@@ -45,9 +54,11 @@ protected:
 
 	void EquipCurrent();
 	void UnequipCurrent();
+	
+	void BroadcastWeaponInitialized();
 
 	UFP_WeaponBase* CreateLogic(UFP_WeaponDataAsset* WeaponDataAsset, AFP_BaseCharacter* OwnerCharacter);
-	AFP_WeaponVisualBase* CreateVisual(UFP_WeaponDataAsset* WeaponDataAsset, AFP_BaseCharacter* OwnerCharacter);
+	AFP_WeaponVisualBase* CreateVisual(AFP_BaseCharacter* OwnerCharacter);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Starting")
 	TObjectPtr<UFP_WeaponDataAsset> StartingPrimaryData;

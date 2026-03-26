@@ -8,6 +8,10 @@
 #include "Weapon/WeaponTypes/FP_WeaponTypes.h"
 #include "FP_WeaponBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFire);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReload);
+
 class UFP_WeaponDataAsset;
 class AFP_BaseCharacter;
 /**
@@ -45,12 +49,12 @@ public:
 	void Reload();
 	void FinishReload();
 
-	void PerformFireLogic();
+	void PerformFire();
 
 	void PrintDebugMessage(FHitResult HitResult, bool bHit);
 
 	/* Virtual Methods */
-	virtual void PerformFire();
+	virtual void PerformFireLogic();
 
 	virtual void ConsumeAmmo();
 
@@ -81,11 +85,16 @@ public:
 
 	virtual UWorld* GetWorld() const override;
 
+	UPROPERTY(BlueprintAssignable, Category = "Weapon|Events")
+	FOnFire OnFire;
+
+	UPROPERTY(BlueprintAssignable, Category = "Weapon|Events")
+	FOnReload OnReload;
+
 protected:
 	virtual bool MakeTrace(FHitResult& OutHitResult) const;
 	
-	bool TryPlayFireMontage();
-	bool TryPlayReloadMontage();
+	void BroadcastAmmoChanged();
 
 	FTimerHandle FireTimerHandle;
 

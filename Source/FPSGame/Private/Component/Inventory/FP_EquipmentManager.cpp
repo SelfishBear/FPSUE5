@@ -43,10 +43,11 @@ void UFP_EquipmentManager::GiveStartingWeapons()
 	{
 		EquipByIndex(0);
 	}
+	
+	BroadcastWeaponInitialized();
 }
 
-UFP_WeaponBase* UFP_EquipmentManager::CreateLogic(UFP_WeaponDataAsset* WeaponDataAsset,
-                                                  AFP_BaseCharacter* OwnerCharacter)
+UFP_WeaponBase* UFP_EquipmentManager::CreateLogic(UFP_WeaponDataAsset* WeaponDataAsset, AFP_BaseCharacter* OwnerCharacter)
 {
 	TSubclassOf<UFP_WeaponBase> LogicClass = WeaponDataAsset->WeaponLogicClass;
 	if (!IsValid(LogicClass))
@@ -64,21 +65,22 @@ UFP_WeaponBase* UFP_EquipmentManager::CreateLogic(UFP_WeaponDataAsset* WeaponDat
 	return NewWeapon;
 }
 
-AFP_WeaponVisualBase* UFP_EquipmentManager::CreateVisual(UFP_WeaponDataAsset* WeaponDataAsset,
-                                                         AFP_BaseCharacter* OwnerCharacter)
+AFP_WeaponVisualBase* UFP_EquipmentManager::CreateVisual(AFP_BaseCharacter* OwnerCharacter)
 {
-	if (!IsValid(WeaponDataAsset->WeaponVisualClass)) return nullptr;
+	if (!IsValid(CurrentWeapon->WeaponData->WeaponVisualClass)) return nullptr;
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = OwnerCharacter;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	AFP_WeaponVisualBase* NewVisual = GetWorld()->SpawnActor<AFP_WeaponVisualBase>(
-		WeaponDataAsset->WeaponVisualClass,
+		CurrentWeapon->WeaponData->WeaponVisualClass,
 		FVector::ZeroVector,
 		FRotator::ZeroRotator,
 		SpawnParams
 	);
+	
+	NewVisual->Initialize(CurrentWeapon);
 
 	if (!IsValid(NewVisual)) return nullptr;
 
@@ -93,6 +95,7 @@ AFP_WeaponVisualBase* UFP_EquipmentManager::CreateVisual(UFP_WeaponDataAsset* We
 		NewVisual->AttachToComponent(CharMesh, AttachRules, AttachSocket);
 	}
 
+	
 	return NewVisual;
 }
 
@@ -105,10 +108,10 @@ void UFP_EquipmentManager::EquipByIndex(int32 Index)
 
 	CurrentWeaponIndex = Index;
 	CurrentWeapon = EquippedWeapons[Index];
-
+	
 	EquipCurrent();
 }
-
+ 
 void UFP_EquipmentManager::EquipCurrent()
 {
 	if (!IsValid(CurrentWeapon) || !IsValid(CurrentWeapon->WeaponData)) return;
@@ -116,7 +119,9 @@ void UFP_EquipmentManager::EquipCurrent()
 	AFP_BaseCharacter* OwnerCharacter = Cast<AFP_BaseCharacter>(GetOwner());
 	if (!IsValid(OwnerCharacter)) return;
 
-	CurrentVisual = CreateVisual(CurrentWeapon->WeaponData, OwnerCharacter);
+	CurrentVisual = CreateVisual(OwnerCharacter);
+	
+	OnWeaponEquipped.Broadcast(CurrentWeapon);
 }
 
 void UFP_EquipmentManager::UnequipCurrent()
@@ -128,6 +133,17 @@ void UFP_EquipmentManager::UnequipCurrent()
 	}
 
 	CurrentWeapon = nullptr;
+}
+
+void UFP_EquipmentManager::BroadcastWeaponInitialized()
+{
+	for (UFP_WeaponBase* Weapon : EquippedWeapons)
+	{
+		if (IsValid(Weapon) && IsValid(Weapon->WeaponData))
+		{
+			OnWeaponAmmoChanged.Broadcast(Weapon);
+		}
+	}
 }
 
 void UFP_EquipmentManager::SwitchByDirection(int32 Direction)

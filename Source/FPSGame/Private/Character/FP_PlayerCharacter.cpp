@@ -135,10 +135,7 @@ void AFP_PlayerCharacter::HandleSwitchWeaponAction(const FInputActionValue& Valu
 	if (!IsValid(EquipmentManager)) return;
 
 	const int32 Index = FMath::RoundToInt32(Value.Get<float>());
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,
-	                                 FString::Printf(TEXT("Switching to weapon index: %d"), Index));
-
+	
 	switch (Index)
 	{
 	case 1:
@@ -156,9 +153,6 @@ void AFP_PlayerCharacter::HandleScrollWeapon(const FInputActionValue& Value)
 	if (!IsValid(EquipmentManager)) return;
 
 	const float Axis = Value.Get<float>();
-
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue,
-	                                 FString::Printf(TEXT("Scrolling weapon with axis value: %f"), Axis));
 
 	if (FMath::IsNearlyZero(Axis)) return;
 

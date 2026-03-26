@@ -8,7 +8,9 @@
 #include "Character/FP_BaseCharacter.h"
 #include "Engine/Engine.h"
 #include "DrawDebugHelpers.h"
+#include "Character/FP_PlayerCharacter.h"
 #include "Component/Character/FP_CharacterMovementComponent.h"
+#include "Component/Inventory/FP_EquipmentManager.h"
 
 UWorld* UFP_WeaponBase::GetWorld() const
 {
@@ -72,20 +74,6 @@ void UFP_WeaponBase::StopFire()
 	}
 }
 
-bool UFP_WeaponBase::TryPlayReloadMontage()
-{
-	AFP_BaseCharacter* OwnerCharacter = GetOwningCharacter();
-	if (!IsValid(OwnerCharacter)) return false;
-
-	UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-	if (!IsValid(AnimInstance) || !IsValid(WeaponData->ReloadMontage)) return false;
-
-	bCanFire = false;
-
-	AnimInstance->Montage_Play(WeaponData->ReloadMontage);
-	return true;
-}
-
 void UFP_WeaponBase::Reload()
 {
 	if (CurrentState == EWeaponState::Reloading || CurrentAmmo >= WeaponData->MaxAmmo || CurrentReserveAmmo <= 0)
@@ -93,7 +81,7 @@ void UFP_WeaponBase::Reload()
 
 	CurrentState = EWeaponState::Reloading;
 
-	if (!TryPlayReloadMontage()) return;
+	OnReload.Broadcast();
 }
 
 void UFP_WeaponBase::FinishReload()
@@ -106,6 +94,8 @@ void UFP_WeaponBase::FinishReload()
 	CurrentAmmo += AmmoToAdd;
 	CurrentState = EWeaponState::Idle;
 	bCanFire = true;
+
+	BroadcastAmmoChanged();
 }
 
 void UFP_WeaponBase::ConsumeAmmo()
@@ -113,6 +103,7 @@ void UFP_WeaponBase::ConsumeAmmo()
 	if (CurrentAmmo > 0)
 	{
 		CurrentAmmo--;
+		BroadcastAmmoChanged();
 	}
 }
 
@@ -180,23 +171,23 @@ bool UFP_WeaponBase::MakeTrace(FHitResult& OutHitResult) const
 	return bHit;
 }
 
-bool UFP_WeaponBase::TryPlayFireMontage()
+void UFP_WeaponBase::BroadcastAmmoChanged()
 {
-	AFP_BaseCharacter* OwnerCharacter = GetOwningCharacter();
-	if (!IsValid(OwnerCharacter)) return false;
-	
-	UAnimInstance* AnimInstance = OwnerCharacter->GetMesh()->GetAnimInstance();
-	if (!IsValid(AnimInstance) || !IsValid(WeaponData->FireMontage)) return false;
-	
-	AnimInstance->Montage_Play(WeaponData->FireMontage);
-	return true;
+	AFP_PlayerCharacter* FP_PlayerCharacter = Cast<AFP_PlayerCharacter>(GetOwningCharacter());
+	if (IsValid(FP_PlayerCharacter))
+	{
+		FP_PlayerCharacter->GetEquipmentManager()->OnWeaponAmmoChanged.Broadcast(this);
+	}
 }
 
 void UFP_WeaponBase::PerformFire()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("Performing Fire Logic"));
 	if (!IsValid(WeaponData)) return;
-	
-	TryPlayFireMontage();
+
+	UE_LOG(LogTemp, Warning, TEXT("OnFire.Broadcast, IsBound: %s"), OnFire.IsBound() ? TEXT("true") : TEXT("false"));
+
+	OnFire.Broadcast();
 }
 
 void UFP_WeaponBase::PerformFireLogic()
