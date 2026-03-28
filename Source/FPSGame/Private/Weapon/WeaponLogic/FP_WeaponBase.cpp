@@ -147,8 +147,7 @@ bool UFP_WeaponBase::MakeTrace(FHitResult& OutHitResult) const
 	FVector ShotDirection = (FP_CharacterMovementComponent->Velocity != FVector::ZeroVector)
 		                        ? FMath::VRandCone(CameraRotation.Vector(), HalfAngleRad)
 		                        : CameraRotation.Vector();
-
-	const float TraceDistance = 10000.0f;
+	
 	const FVector TraceEnd = TraceStart + ShotDirection * TraceDistance;
 
 	FCollisionQueryParams QueryParams;

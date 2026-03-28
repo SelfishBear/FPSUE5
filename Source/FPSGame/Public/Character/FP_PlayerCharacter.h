@@ -87,6 +87,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> ScrollWeaponAction;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> StabAction;
 
 private:
 	/** Input Handlers */
@@ -101,4 +104,6 @@ private:
 	void HandleReload();
 	void HandleSwitchWeaponAction(const FInputActionValue& Value);
 	void HandleScrollWeapon(const FInputActionValue& Value);
+	
+	void Stab();
 };

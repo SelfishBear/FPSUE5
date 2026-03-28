@@ -8,7 +8,7 @@
 
 AFP_WeaponVisualBase::AFP_WeaponVisualBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	RootComponent = WeaponMesh;
@@ -48,16 +48,6 @@ void AFP_WeaponVisualBase::PlayReloadMontage()
 	AnimInstance->Montage_Play(WeaponLogic->WeaponData->ReloadMontage);
 }
 
-void AFP_WeaponVisualBase::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AFP_WeaponVisualBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void AFP_WeaponVisualBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (WeaponLogic.IsValid())
@@ -67,4 +57,14 @@ void AFP_WeaponVisualBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 	
 	Super::EndPlay(EndPlayReason);
+}
+
+void AFP_WeaponVisualBase::ShowWeapon()
+{
+	SetActorHiddenInGame(false);
+}
+
+void AFP_WeaponVisualBase::HideWeapon()
+{
+	SetActorHiddenInGame(true);
 }

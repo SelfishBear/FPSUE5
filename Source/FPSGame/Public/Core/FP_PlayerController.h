@@ -19,11 +19,17 @@ class FPSGAME_API AFP_PlayerController : public APlayerController
 public:
 	AFP_PlayerController();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void SwitchContext(const UInputMappingContext* ContextToActivate);
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
-	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	TObjectPtr<UInputMappingContext> MainPlayerMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputMappingContext> ShopMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	int32 DefaultMappingPriority = 0;

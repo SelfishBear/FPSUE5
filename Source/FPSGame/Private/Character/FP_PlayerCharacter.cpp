@@ -70,6 +70,8 @@ void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 	EnhancedInput->BindAction(ScrollWeaponAction, ETriggerEvent::Triggered, this,
 	                          &AFP_PlayerCharacter::HandleScrollWeapon);
+	
+	EnhancedInput->BindAction(StabAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::Stab);
 }
 
 void AFP_PlayerCharacter::Move(const FInputActionValue& Value)
@@ -157,4 +159,11 @@ void AFP_PlayerCharacter::HandleScrollWeapon(const FInputActionValue& Value)
 	if (FMath::IsNearlyZero(Axis)) return;
 
 	EquipmentManager->SwitchByDirection(Axis > 0.f ? 1 : -1);
+}
+
+void AFP_PlayerCharacter::Stab()
+{
+	if (!IsValid(EquipmentManager)) return;
+	
+	EquipmentManager->Stab();
 }

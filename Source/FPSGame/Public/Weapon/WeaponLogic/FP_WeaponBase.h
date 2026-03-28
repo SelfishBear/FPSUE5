@@ -42,6 +42,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	EFireMode CurrentFireMode = EFireMode::FullAuto;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	float TraceDistance = 10000.0f;
 
 	void StartFire();
 	void StopFire();

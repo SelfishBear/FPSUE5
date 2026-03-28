@@ -29,12 +29,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE UFP_WeaponBase* GetWeaponLogic() const { return WeaponLogic.Get(); }
+	
+	void ShowWeapon();
+	
+	void HideWeapon();
 
 protected:
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-	
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	TWeakObjectPtr<UFP_WeaponBase> WeaponLogic;

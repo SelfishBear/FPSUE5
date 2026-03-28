@@ -16,4 +16,10 @@ class FPSGAME_API AFP_HUD : public AHUD
 
 public:
 	AFP_HUD();
+
+	UFUNCTION(BlueprintImplementableEvent, Category="Shop")
+	void CreateHUDWidget();
+
+protected:
+	virtual void BeginPlay() override;
 };
