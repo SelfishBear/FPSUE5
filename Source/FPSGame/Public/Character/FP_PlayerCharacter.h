@@ -7,6 +7,7 @@
 #include "Component/Character/FP_CharacterMovementComponent.h"
 #include "FP_PlayerCharacter.generated.h"
 
+class UFP_WalletComponent;
 class UFP_DynamicCameraComponent;
 class UFP_CharacterMovementComponent;
 class UFP_EquipmentManager;
@@ -32,6 +33,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UFP_EquipmentManager* GetEquipmentManager() const { return EquipmentManager; }
+	
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE UFP_WalletComponent* GetWalletComponent() const { return WalletComponent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -62,6 +66,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_EquipmentManager> EquipmentManager;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UFP_WalletComponent> WalletComponent;
 	
 	/** Input Actions */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")

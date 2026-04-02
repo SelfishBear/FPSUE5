@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "FP_HUD.generated.h"
 
+class UFP_WeaponDataAsset;
 /**
  * 
  */

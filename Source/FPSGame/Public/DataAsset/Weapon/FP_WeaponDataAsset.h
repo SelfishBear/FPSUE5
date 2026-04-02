@@ -12,12 +12,13 @@ class UFP_WeaponBase;
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class FPSGAME_API UFP_WeaponDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
+	/*Weapon Stats*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	FName WeaponName = "DefaultWeapon";
 
@@ -41,13 +42,21 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	EFireMode FireMode = EFireMode::FullAuto;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
+	float ReloadTime = 1.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
+	float WeaponPrice = 200.0f;
 
+	/*References to Visual and Logic Classes*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	TSubclassOf<AFP_WeaponVisualBase> WeaponVisualClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	TSubclassOf<UFP_WeaponBase> WeaponLogicClass;
 	
+	/*Animations*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animations")
 	TObjectPtr<UAnimMontage> FireMontage;
 	

@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Component/Camera/FP_DynamicCameraComponent.h"
+#include "Component/Character/FP_WalletComponent.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -34,8 +35,8 @@ AFP_PlayerCharacter::AFP_PlayerCharacter(const FObjectInitializer& ObjectInitial
 	GetMesh()->SetupAttachment(MeshOffsetRoot);
 
 	DynamicCameraComponent = CreateDefaultSubobject<UFP_DynamicCameraComponent>(TEXT("DynamicCameraComponent"));
-
 	EquipmentManager = CreateDefaultSubobject<UFP_EquipmentManager>(TEXT("EquipmentManager"));
+	WalletComponent = CreateDefaultSubobject<UFP_WalletComponent>(TEXT("WalletComponent"));
 }
 
 void AFP_PlayerCharacter::BeginPlay()
