@@ -25,27 +25,48 @@ class FPSGAME_API UFP_WeaponBase : public UObject
 public:
 	TWeakObjectPtr<AFP_BaseCharacter> OwningCharacter;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	TObjectPtr<UFP_WeaponDataAsset> WeaponData;
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	float CurrentAmmo = 0.0f;
-
+	EWeaponState CurrentState = EWeaponState::Idle;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	float CurrentReserveAmmo = 0.0f;
-
+	EFireMode CurrentFireMode = EFireMode::FullAuto;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	bool bCanFire = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	EWeaponState CurrentState = EWeaponState::Idle;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
-	EFireMode CurrentFireMode = EFireMode::FullAuto;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	float TraceDistance = 10000.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (ClampMin = "1", ClampMax = "5"))
+	int32 CurrentWeaponLevel = 1;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponStats")
+	float CurrentDamage = 20.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponStats")
+	float CurrentFireRate = 600.0f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponStats")
+	float CurrentReloadTime = 1.0f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponStats")
+	float CurrentWeaponPrice = 200.0f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponStats")
+	float CurrentAmmo = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponStats")
+	float CurrentReserveAmmo = 0.0f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponStats")
+	float MaxAmmo = 30.0f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponStats")
+	float MaxReserveAmmo = 90.0f;
+	
 	void StartFire();
 	void StopFire();
 
@@ -60,7 +81,7 @@ public:
 	virtual void PerformFireLogic();
 
 	virtual void ConsumeAmmo();
-
+	
 	/* Getters */
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE AFP_BaseCharacter* GetOwningCharacter() const { return OwningCharacter.Get(); }
@@ -96,7 +117,7 @@ public:
 
 protected:
 	virtual bool MakeTrace(FHitResult& OutHitResult) const;
-	
+
 	void BroadcastAmmoChanged();
 
 	FTimerHandle FireTimerHandle;

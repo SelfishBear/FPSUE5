@@ -23,12 +23,12 @@ UWorld* UFP_WeaponBase::GetWorld() const
 
 void UFP_WeaponBase::StartFire()
 {
-	if (!CanFire() || !IsValid(WeaponData)) return;
+	if (!CanFire()) return;
 
 	bIsFiring = true;
 	CurrentState = EWeaponState::Firing;
 
-	const float FireInterval = 60.0f / WeaponData->FireRate;
+	const float FireInterval = 60.0f / CurrentFireRate;
 
 	HandleFireTimer();
 
@@ -76,7 +76,7 @@ void UFP_WeaponBase::StopFire()
 
 void UFP_WeaponBase::Reload()
 {
-	if (CurrentState == EWeaponState::Reloading || CurrentAmmo >= WeaponData->MaxAmmo || CurrentReserveAmmo <= 0)
+	if (CurrentState == EWeaponState::Reloading || CurrentReserveAmmo <= 0)
 		return;
 
 	CurrentState = EWeaponState::Reloading;
@@ -88,7 +88,7 @@ void UFP_WeaponBase::FinishReload()
 {
 	if (CurrentState != EWeaponState::Reloading || !IsValid(WeaponData)) return;
 
-	const float NeededAmmo = WeaponData->MaxAmmo - CurrentAmmo;
+	const float NeededAmmo = MaxAmmo - CurrentAmmo;
 	const float AmmoToAdd = FMath::Min(NeededAmmo, CurrentReserveAmmo);
 	CurrentReserveAmmo -= AmmoToAdd;
 	CurrentAmmo += AmmoToAdd;
@@ -109,21 +109,17 @@ void UFP_WeaponBase::ConsumeAmmo()
 
 void UFP_WeaponBase::PrintDebugMessage(FHitResult HitResult, const bool bHit)
 {
+	if (!GEngine) return;
 	if (bHit && HitResult.GetActor())
 	{
 		const FString HitActorName = HitResult.GetActor()->GetName();
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow,
-			                                 FString::Printf(TEXT("Hit: %s"), *HitActorName));
-		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow,
+		                                 FString::Printf(TEXT("Hit: %s"), *HitActorName));
 	}
 	else
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("Hit: Nothing"));
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("Hit: Nothing"));
 	}
 }
 
@@ -147,7 +143,7 @@ bool UFP_WeaponBase::MakeTrace(FHitResult& OutHitResult) const
 	FVector ShotDirection = (FP_CharacterMovementComponent->Velocity != FVector::ZeroVector)
 		                        ? FMath::VRandCone(CameraRotation.Vector(), HalfAngleRad)
 		                        : CameraRotation.Vector();
-	
+
 	const FVector TraceEnd = TraceStart + ShotDirection * TraceDistance;
 
 	FCollisionQueryParams QueryParams;

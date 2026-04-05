@@ -24,31 +24,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	EWeaponSlot WeaponSlot = EWeaponSlot::Primary;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
-	float Damage = 20.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
-	float FireRate = 600.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
-	float MaxAmmo = 30.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
-	float MaxReserveAmmo = 90.0f;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	float SpreadAngle = 5.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	EFireMode FireMode = EFireMode::FullAuto;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
-	float ReloadTime = 1.0f;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
-	float WeaponPrice = 200.0f;
-
 	/*References to Visual and Logic Classes*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	TSubclassOf<AFP_WeaponVisualBase> WeaponVisualClass;
@@ -62,4 +44,11 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animations")
 	TObjectPtr<UAnimMontage> ReloadMontage;
+	
+	/*Curve Table*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Curves")
+	TObjectPtr<UCurveTable> WeaponLevelingTable;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Curves")
+	int32 MaxLevel = 5;
 };

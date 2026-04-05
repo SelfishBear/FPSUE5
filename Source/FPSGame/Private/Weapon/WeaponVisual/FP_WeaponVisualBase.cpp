@@ -45,7 +45,7 @@ void AFP_WeaponVisualBase::PlayReloadMontage()
 
 	WeaponLogic->bCanFire = false;
 
-	AnimInstance->Montage_Play(WeaponLogic->WeaponData->ReloadMontage, WeaponLogic->WeaponData->ReloadTime);
+	AnimInstance->Montage_Play(WeaponLogic->WeaponData->ReloadMontage, WeaponLogic->CurrentReloadTime);
 }
 
 void AFP_WeaponVisualBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
