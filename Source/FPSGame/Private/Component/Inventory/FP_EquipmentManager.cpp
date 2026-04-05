@@ -10,6 +10,8 @@
 #include "DataAsset/Weapon/FP_MeleeWeaponDataAsset.h"
 #include "Engine/Engine.h"
 #include "Utils/FP_Sockets.h"
+#include "Utils/FP_UtilsFunctionLibrary.h"
+#include "Utils/FP_WeaponCurves.h"
 #include "Weapon/WeaponLogic/FP_MeleeWeaponBase.h"
 #include "Weapon/WeaponVisual/FP_MeleeWeaponVisualBase.h"
 
@@ -30,16 +32,16 @@ void UFP_EquipmentManager::GiveStartingWeapons()
 	AFP_BaseCharacter* OwnerCharacter = Cast<AFP_BaseCharacter>(GetOwner());
 	if (!IsValid(OwnerCharacter)) return;
 
+	EquippedWeapons.SetNum(2);
+
 	if (IsValid(StartingPrimaryData))
 	{
-		UFP_WeaponBase* Primary = CreateLogic(StartingPrimaryData, OwnerCharacter);
-		EquippedWeapons.Add(Primary);
+		EquippedWeapons[0] = CreateLogic(StartingPrimaryData, OwnerCharacter);
 	}
 
 	if (IsValid(StartingSecondaryData))
 	{
-		UFP_WeaponBase* Secondary = CreateLogic(StartingSecondaryData, OwnerCharacter);
-		EquippedWeapons.Add(Secondary);
+		EquippedWeapons[1] = CreateLogic(StartingSecondaryData, OwnerCharacter);
 	}
 
 	if (IsValid(StartingMeleeData))
@@ -50,10 +52,37 @@ void UFP_EquipmentManager::GiveStartingWeapons()
 
 	if (EquippedWeapons.Num() > 0)
 	{
-		EquipByIndex(0);
+		for (int i = 0; i < EquippedWeapons.Num(); i++)
+		{
+			if (EquippedWeapons[i] != nullptr)
+			{
+				EquipByIndex(i);
+			}
+		}
 	}
 
 	BroadcastWeaponInitialized();
+}
+
+void UFP_EquipmentManager::EquipNewWeapon(UFP_WeaponDataAsset* NewWeaponData)
+{
+	if (!IsValid(NewWeaponData)) return;
+
+	AFP_BaseCharacter* OwnerCharacter = Cast<AFP_BaseCharacter>(GetOwner());
+	if (!IsValid(OwnerCharacter)) return;
+
+	const int32 SlotIndex = static_cast<int32>(NewWeaponData->WeaponSlot);
+	if (!EquippedWeapons.IsValidIndex(SlotIndex)) return;
+
+	EquippedWeapons[SlotIndex] = CreateLogic(NewWeaponData, OwnerCharacter);
+
+	if (SlotIndex == CurrentWeaponIndex)
+	{
+		CurrentWeapon = nullptr;
+		EquipByIndex(SlotIndex);
+	}
+
+	OnWeaponAmmoChanged.Broadcast(EquippedWeapons[SlotIndex]);
 }
 
 UFP_MeleeWeaponBase* UFP_EquipmentManager::CreateMeleeLogic(UFP_MeleeWeaponDataAsset* MeleeDataAsset,
@@ -90,21 +119,21 @@ AFP_MeleeWeaponVisualBase* UFP_EquipmentManager::CreateMeleeVisual(AFP_BaseChara
 		FRotator::ZeroRotator,
 		SpawnParams
 	);
-	
+
 	if (!IsValid(NewVisual)) return nullptr;
 
 	NewVisual->Initialize(CurrentMeleeWeapon);
-	
+
 	FName AttachSocket = AttachMeleeTo(CurrentMeleeWeapon);
 
 	FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, true);
 	USkeletalMeshComponent* CharMesh = OwnerCharacter->GetMesh();
-	
+
 	if (IsValid(CharMesh) && CharMesh->DoesSocketExist(AttachSocket))
 	{
 		NewVisual->AttachToComponent(CharMesh, AttachRules, AttachSocket);
 	}
-	
+
 	return NewVisual;
 }
 
@@ -120,8 +149,16 @@ UFP_WeaponBase* UFP_EquipmentManager::CreateLogic(UFP_WeaponDataAsset* WeaponDat
 	UFP_WeaponBase* NewWeapon = NewObject<UFP_WeaponBase>(this, LogicClass);
 	NewWeapon->WeaponData = WeaponDataAsset;
 	NewWeapon->OwningCharacter = OwnerCharacter;
-	NewWeapon->CurrentAmmo = WeaponDataAsset->MaxAmmo;
-	NewWeapon->CurrentReserveAmmo = WeaponDataAsset->MaxReserveAmmo;
+	
+	NewWeapon->CurrentDamage = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::DamageCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentFireRate = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::FireRateCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentReloadTime = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::ReloadTimeCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentWeaponPrice = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::PriceCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::AmmoCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentReserveAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::ReserveAmmoCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->MaxAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::AmmoCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->MaxReserveAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::ReserveAmmoCurve, NewWeapon->CurrentWeaponLevel);
+	
 	NewWeapon->CurrentFireMode = WeaponDataAsset->FireMode;
 
 	return NewWeapon;
@@ -165,6 +202,7 @@ void UFP_EquipmentManager::EquipByIndex(int32 Index)
 {
 	if (!CanSwapWeapon()) return;
 	if (!EquippedWeapons.IsValidIndex(Index)) return;
+	if (EquippedWeapons[Index] == nullptr) return;
 	if (Index == CurrentWeaponIndex && IsValid(CurrentWeapon)) return;
 
 	UnequipCurrent();

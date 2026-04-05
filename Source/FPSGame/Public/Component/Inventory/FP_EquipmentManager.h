@@ -32,6 +32,9 @@ public:
 	void Reload();
 
 	void Stab();
+	
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void EquipNewWeapon(UFP_WeaponDataAsset* NewWeaponData);
 
 	void EquipByIndex(int32 Index);
 	void SwitchByDirection(int32 Direction);
