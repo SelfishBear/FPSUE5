@@ -16,6 +16,6 @@ class FPSGAME_API UFP_UtilsFunctionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable, Category = "Weapon Utils")
+	UFUNCTION(BlueprintPure, Category = "Weapon Utils")
 	static float GetStatForLevel(UFP_WeaponDataAsset* WeaponData, FName StatName, int32 Level);
 };
