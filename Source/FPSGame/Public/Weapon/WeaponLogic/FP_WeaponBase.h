@@ -36,6 +36,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	bool bCanFire = true;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	bool bCanReload = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	float TraceDistance = 10000.0f;
@@ -54,6 +57,9 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponStats")
 	float CurrentWeaponPrice = 200.0f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="WeaponStats")
+	float CurrentWeaponUpgradePrice = 30.0f;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "WeaponStats")
 	float CurrentAmmo = 0.0f;
@@ -97,6 +103,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE bool CanFire() const { return bCanFire && CurrentAmmo > 0 && CurrentState != EWeaponState::Reloading; }
+	
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	FORCEINLINE bool CanReload() const { return bCanReload && CurrentAmmo < MaxAmmo && CurrentReserveAmmo > 0 && CurrentState != EWeaponState::Reloading; }
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE EWeaponState GetCurrentState() const { return CurrentState; }

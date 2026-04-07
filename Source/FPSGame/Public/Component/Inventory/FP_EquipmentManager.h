@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Weapon/WeaponLogic/FP_WeaponBase.h"
 #include "FP_EquipmentManager.generated.h"
 
 class AFP_MeleeWeaponVisualBase;
@@ -32,16 +33,22 @@ public:
 	void Reload();
 
 	void Stab();
-	
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void EquipNewWeapon(UFP_WeaponDataAsset* NewWeaponData);
+
 
 	void EquipByIndex(int32 Index);
 	void SwitchByDirection(int32 Direction);
 
 	FName AttachWeaponTo(UFP_WeaponBase* Weapon);
-
 	FName AttachMeleeTo(UFP_MeleeWeaponBase* MeleeWeapon);
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void UpgradeWeapon(int32 Index);
+	
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void EquipNewWeapon(UFP_WeaponDataAsset* NewWeaponData);
+	
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	bool CanUpgradeWeaponByIndex(int32 Index) const;
 
 	/*Ranged Weapon */
 	UFUNCTION(BlueprintPure, Category = "Weapon")
@@ -103,7 +110,7 @@ protected:
 	TObjectPtr<UFP_MeleeWeaponDataAsset> StartingMeleeData;
 
 	/* Ranged Weapons */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
 	TArray<UFP_WeaponBase*> EquippedWeapons;
 
 	UPROPERTY()

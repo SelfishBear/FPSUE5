@@ -76,8 +76,7 @@ void UFP_WeaponBase::StopFire()
 
 void UFP_WeaponBase::Reload()
 {
-	if (CurrentState == EWeaponState::Reloading || CurrentAmmo >= MaxAmmo || CurrentReserveAmmo <= 0)
-		return;
+	if (!CanReload()) return;
 
 	CurrentState = EWeaponState::Reloading;
 
@@ -93,7 +92,6 @@ void UFP_WeaponBase::FinishReload()
 	CurrentReserveAmmo -= AmmoToAdd;
 	CurrentAmmo += AmmoToAdd;
 	CurrentState = EWeaponState::Idle;
-	bCanFire = true;
 
 	BroadcastAmmoChanged();
 }

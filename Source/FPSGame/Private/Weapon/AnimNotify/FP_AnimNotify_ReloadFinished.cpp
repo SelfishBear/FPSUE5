@@ -1,9 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Weapon/AnimNotify/FP_AnimNotify_ReloadFinished.h"
-#include "Character/FP_BaseCharacter.h"
 #include "Character/FP_PlayerCharacter.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
+#include "Weapon/WeaponLogic/FP_MeleeWeaponBase.h"
 #include "Weapon/WeaponLogic/FP_WeaponBase.h"
 
 void UFP_AnimNotify_ReloadFinished::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
@@ -22,6 +22,10 @@ void UFP_AnimNotify_ReloadFinished::Notify(USkeletalMeshComponent* MeshComp, UAn
 	UFP_WeaponBase* Weapon = EquipManager->GetCurrentWeapon();
 	if (!IsValid(Weapon)) return;
 
+	EquipManager->GetCurrentMeleeWeapon()->bCanAttack = true;
+	EquipManager->GetCurrentWeapon()->bCanFire = true;
+	EquipManager->GetCurrentWeapon()->bCanReload = true;
+	EquipManager->SetCanSwapWeapon(true);
 	Weapon->FinishReload();
 }
 

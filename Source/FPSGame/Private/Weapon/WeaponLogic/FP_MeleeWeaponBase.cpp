@@ -8,6 +8,7 @@
 
 void UFP_MeleeWeaponBase::PerformAttack()
 {
+	if (!CanPerformAttack()) return;
 	OnAttack.Broadcast();
 }
 

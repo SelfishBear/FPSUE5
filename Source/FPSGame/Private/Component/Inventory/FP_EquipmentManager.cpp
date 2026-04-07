@@ -85,6 +85,16 @@ void UFP_EquipmentManager::EquipNewWeapon(UFP_WeaponDataAsset* NewWeaponData)
 	OnWeaponAmmoChanged.Broadcast(EquippedWeapons[SlotIndex]);
 }
 
+bool UFP_EquipmentManager::CanUpgradeWeaponByIndex(int32 Index) const
+{
+	if (!EquippedWeapons.IsValidIndex(Index)) return false;
+	if (!IsValid(EquippedWeapons[Index])) return false;
+	
+	if (EquippedWeapons[Index]->CurrentWeaponLevel >= EquippedWeapons[Index]->WeaponData->MaxLevel) return false;
+	
+	return true;
+}
+
 UFP_MeleeWeaponBase* UFP_EquipmentManager::CreateMeleeLogic(UFP_MeleeWeaponDataAsset* MeleeDataAsset,
                                                             AFP_BaseCharacter* OwnerCharacter)
 {
@@ -149,16 +159,26 @@ UFP_WeaponBase* UFP_EquipmentManager::CreateLogic(UFP_WeaponDataAsset* WeaponDat
 	UFP_WeaponBase* NewWeapon = NewObject<UFP_WeaponBase>(this, LogicClass);
 	NewWeapon->WeaponData = WeaponDataAsset;
 	NewWeapon->OwningCharacter = OwnerCharacter;
-	
-	NewWeapon->CurrentDamage = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::DamageCurve, NewWeapon->CurrentWeaponLevel);
-	NewWeapon->CurrentFireRate = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::FireRateCurve, NewWeapon->CurrentWeaponLevel);
-	NewWeapon->CurrentReloadTime = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::ReloadTimeCurve, NewWeapon->CurrentWeaponLevel);
-	NewWeapon->CurrentWeaponPrice = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::PriceCurve, NewWeapon->CurrentWeaponLevel);
-	NewWeapon->CurrentAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::AmmoCurve, NewWeapon->CurrentWeaponLevel);
-	NewWeapon->CurrentReserveAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::ReserveAmmoCurve, NewWeapon->CurrentWeaponLevel);
-	NewWeapon->MaxAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::AmmoCurve, NewWeapon->CurrentWeaponLevel);
-	NewWeapon->MaxReserveAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset,FP_WeaponCurves::ReserveAmmoCurve, NewWeapon->CurrentWeaponLevel);
-	
+
+	NewWeapon->CurrentDamage = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponDataAsset, FP_WeaponCurves::DamageCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentFireRate = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponDataAsset, FP_WeaponCurves::FireRateCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentReloadTime = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponDataAsset, FP_WeaponCurves::ReloadTimeCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentWeaponPrice = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponDataAsset, FP_WeaponCurves::PriceCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset, FP_WeaponCurves::AmmoCurve,
+	                                                                   NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentReserveAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponDataAsset, FP_WeaponCurves::ReserveAmmoCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->MaxAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(WeaponDataAsset, FP_WeaponCurves::AmmoCurve,
+	                                                               NewWeapon->CurrentWeaponLevel);
+	NewWeapon->MaxReserveAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponDataAsset, FP_WeaponCurves::ReserveAmmoCurve, NewWeapon->CurrentWeaponLevel);
+	NewWeapon->CurrentWeaponUpgradePrice = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponDataAsset, FP_WeaponCurves::UpgradeCurve, NewWeapon->CurrentWeaponLevel);
+
 	NewWeapon->CurrentFireMode = WeaponDataAsset->FireMode;
 
 	return NewWeapon;
@@ -271,6 +291,38 @@ FName UFP_EquipmentManager::AttachWeaponTo(UFP_WeaponBase* Weapon)
 FName UFP_EquipmentManager::AttachMeleeTo(UFP_MeleeWeaponBase* MeleeWeapon)
 {
 	return FP_Sockets::KnifeSocket;
+}
+
+void UFP_EquipmentManager::UpgradeWeapon(int32 Index)
+{
+	if (!EquippedWeapons.IsValidIndex(Index)) return;
+	if (!IsValid(EquippedWeapons[Index])) return;
+	if (EquippedWeapons[Index]->CurrentWeaponLevel >= EquippedWeapons[Index]->WeaponData->MaxLevel) return;
+
+	UFP_WeaponBase* WeaponToUpgrade = EquippedWeapons[Index];
+
+	WeaponToUpgrade->CurrentWeaponLevel++;
+
+	WeaponToUpgrade->CurrentDamage = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::DamageCurve, WeaponToUpgrade->CurrentWeaponLevel);
+	WeaponToUpgrade->CurrentFireRate = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::FireRateCurve, WeaponToUpgrade->CurrentWeaponLevel);
+	WeaponToUpgrade->CurrentReloadTime = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::ReloadTimeCurve, WeaponToUpgrade->CurrentWeaponLevel);
+	WeaponToUpgrade->CurrentWeaponPrice = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::PriceCurve, WeaponToUpgrade->CurrentWeaponLevel);
+	WeaponToUpgrade->CurrentAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::AmmoCurve, WeaponToUpgrade->CurrentWeaponLevel);
+	WeaponToUpgrade->CurrentReserveAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::ReserveAmmoCurve, WeaponToUpgrade->CurrentWeaponLevel);
+	WeaponToUpgrade->MaxAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::AmmoCurve, WeaponToUpgrade->CurrentWeaponLevel);
+	WeaponToUpgrade->MaxReserveAmmo = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::ReserveAmmoCurve, WeaponToUpgrade->CurrentWeaponLevel);
+	WeaponToUpgrade->CurrentWeaponUpgradePrice = UFP_UtilsFunctionLibrary::GetStatForLevel(
+		WeaponToUpgrade->WeaponData, FP_WeaponCurves::UpgradeCurve, WeaponToUpgrade->CurrentWeaponLevel);
+
+	OnWeaponAmmoChanged.Broadcast(WeaponToUpgrade);
 }
 
 void UFP_EquipmentManager::StartFire()

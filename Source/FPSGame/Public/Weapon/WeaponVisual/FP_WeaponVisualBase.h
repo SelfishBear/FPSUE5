@@ -27,11 +27,14 @@ public:
 	UFUNCTION()
 	void PlayReloadMontage();
 
+	UFUNCTION(BLueprintImplementableEvent, Category = "Weapon|Visual")
+	void PerformFeedback();
+	
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE UFP_WeaponBase* GetWeaponLogic() const { return WeaponLogic.Get(); }
-	
+
 	void ShowWeapon();
-	
+
 	void HideWeapon();
 
 protected:

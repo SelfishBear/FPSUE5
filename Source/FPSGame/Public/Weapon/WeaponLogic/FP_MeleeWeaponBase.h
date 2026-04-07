@@ -21,6 +21,9 @@ public:
 	
 	void MakeAttack();
 	
+	UFUNCTION(BlueprintPure, Category = "Melee")
+	FORCEINLINE bool CanPerformAttack() const { return bCanAttack; }
+	
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE AFP_BaseCharacter* GetOwningCharacter() const { return OwningCharacter.Get(); }
 
@@ -40,6 +43,9 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Melee")
 	float AttackRadius = 50.0f;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Melee")
+	bool bCanAttack = true;
 	
 	UPROPERTY(BlueprintAssignable, Category = "Weapon|Events")
 	FOnAttack OnAttack;

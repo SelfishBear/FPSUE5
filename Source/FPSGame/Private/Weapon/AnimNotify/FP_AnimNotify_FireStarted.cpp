@@ -5,6 +5,7 @@
 #include "Character/FP_PlayerCharacter.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
 #include "Weapon/WeaponLogic/FP_WeaponBase.h"
+#include "Weapon/WeaponVisual/FP_WeaponVisualBase.h"
 
 void UFP_AnimNotify_FireStarted::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                         const FAnimNotifyEventReference& EventReference)
@@ -21,7 +22,11 @@ void UFP_AnimNotify_FireStarted::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 
 	UFP_WeaponBase* Weapon = EquipManager->GetCurrentWeapon();
 	if (!IsValid(Weapon)) return;
-
+	
+	AFP_WeaponVisualBase* WeaponVisual = EquipManager->GetCurrentWeaponVisual();
+	if (!IsValid(WeaponVisual)) return;
+	
 	Weapon->PerformFireLogic();
+	WeaponVisual->PerformFeedback();
 }
 

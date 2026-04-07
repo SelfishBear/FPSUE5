@@ -27,5 +27,6 @@ void UFP_AnimNotify_MeleeShowed::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 	EquipManager->GetCurrentWeaponVisual()->HideWeapon();
 	EquipManager->GetCurrentMeleeWeaponVisual()->ShowMelee();
 	EquipManager->GetCurrentWeapon()->bCanFire = false;
+	EquipManager->GetCurrentWeapon()->bCanReload = false;
 	EquipManager->SetCanSwapWeapon(false);
 }

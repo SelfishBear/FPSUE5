@@ -8,4 +8,5 @@ namespace FP_WeaponCurves
 	const FName AmmoCurve = "Ammo";
 	const FName PriceCurve = "Price";
 	const FName ReserveAmmoCurve = "ReserveAmmo";
+	const FName UpgradeCurve = "UpgradePrice";
 }
