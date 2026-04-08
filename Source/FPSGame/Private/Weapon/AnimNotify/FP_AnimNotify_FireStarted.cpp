@@ -28,5 +28,6 @@ void UFP_AnimNotify_FireStarted::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 	
 	Weapon->PerformFireLogic();
 	WeaponVisual->PerformFeedback();
+	WeaponVisual->PlayShake();
 }
 

@@ -173,6 +173,16 @@ void UFP_WeaponBase::BroadcastAmmoChanged()
 	}
 }
 
+void UFP_WeaponBase::TryApplyDamage(const FHitResult& HitResult, bool bHit)
+{
+	if (!bHit || !IsValid(HitResult.GetActor())) return;
+
+	if (HitResult.GetActor()->GetClass()->ImplementsInterface(UFP_Damageable::StaticClass()))
+	{
+		IFP_Damageable::Execute_ReceiveDamage(HitResult.GetActor(), CurrentDamage);
+	}
+}
+
 void UFP_WeaponBase::PerformFire()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, TEXT("Performing Fire Logic"));
@@ -189,6 +199,8 @@ void UFP_WeaponBase::PerformFireLogic()
 
 	FHitResult HitResult;
 	const bool bHit = MakeTrace(HitResult);
+
+	TryApplyDamage(HitResult, bHit);
 
 	ConsumeAmmo();
 	PrintDebugMessage(HitResult, bHit);

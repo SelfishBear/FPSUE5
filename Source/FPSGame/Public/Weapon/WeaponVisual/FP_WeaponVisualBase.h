@@ -15,27 +15,32 @@ class FPSGAME_API AFP_WeaponVisualBase : public AActor
 
 public:
 	AFP_WeaponVisualBase();
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UStaticMeshComponent> WeaponMesh;
-
-	void Initialize(UFP_WeaponBase* NewWeaponLogic);
 	
+	void Initialize(UFP_WeaponBase* NewWeaponLogic);
+
+	void ShowWeapon();
+
+	void HideWeapon();
+	
+	void PlayShake();
+
 	UFUNCTION()
 	void PlayFireMontage();
-	
+
 	UFUNCTION()
 	void PlayReloadMontage();
 
 	UFUNCTION(BLueprintImplementableEvent, Category = "Weapon|Visual")
 	void PerformFeedback();
-	
+
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE UFP_WeaponBase* GetWeaponLogic() const { return WeaponLogic.Get(); }
 
-	void ShowWeapon();
-
-	void HideWeapon();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> WeaponMesh;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	TSubclassOf<UCameraShakeBase> CameraShake;
 
 protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

@@ -83,6 +83,8 @@ public:
 
 	void PrintDebugMessage(FHitResult HitResult, bool bHit);
 
+	void TryApplyDamage(const FHitResult& HitResult, bool bHit);
+	
 	/* Virtual Methods */
 	virtual void PerformFireLogic();
 

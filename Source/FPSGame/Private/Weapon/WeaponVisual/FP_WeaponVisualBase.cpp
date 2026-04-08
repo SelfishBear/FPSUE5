@@ -68,3 +68,11 @@ void AFP_WeaponVisualBase::HideWeapon()
 {
 	SetActorHiddenInGame(true);
 }
+
+void AFP_WeaponVisualBase::PlayShake()
+{
+	APlayerController* PC = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
+	if (!IsValid(PC) || !IsValid(CameraShake)) return;
+	
+	PC->ClientStartCameraShake(CameraShake);
+}
