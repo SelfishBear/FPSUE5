@@ -19,6 +19,4 @@ UCLASS()
 class FPSGAME_API UFP_PlayerConfig : public UDataAsset
 {
 	GENERATED_BODY()
-	
-	
 };

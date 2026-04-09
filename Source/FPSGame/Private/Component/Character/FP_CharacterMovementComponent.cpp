@@ -14,8 +14,6 @@ UFP_CharacterMovementComponent::UFP_CharacterMovementComponent()
 void UFP_CharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	MaxWalkSpeed = MovementSettings.WalkSpeed;
 }
 
 void UFP_CharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
