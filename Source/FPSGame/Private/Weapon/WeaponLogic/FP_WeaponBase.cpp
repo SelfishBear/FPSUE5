@@ -105,6 +105,14 @@ void UFP_WeaponBase::ConsumeAmmo()
 	}
 }
 
+void UFP_WeaponBase::GiveAmmoToWeapon(float AmmoAmount)
+{
+	if (AmmoAmount <= 0) return;
+
+	CurrentReserveAmmo = FMath::Clamp(CurrentReserveAmmo + AmmoAmount, 0.0f, MaxReserveAmmo);
+	BroadcastAmmoChanged();
+}
+
 void UFP_WeaponBase::PrintDebugMessage(FHitResult HitResult, const bool bHit)
 {
 	if (!GEngine) return;

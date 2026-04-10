@@ -16,6 +16,17 @@ void UFP_MeleeWeaponBase::MakeAttack()
 {
 	FHitResult HitResult;
 	const bool bHit = MakeTrace(HitResult);
+	TryApplyDamage(HitResult, bHit);
+}
+
+void UFP_MeleeWeaponBase::TryApplyDamage(const FHitResult& HitResult, bool bHit)
+{
+	if (!bHit || !IsValid(HitResult.GetActor())) return;
+
+	if (HitResult.GetActor()->GetClass()->ImplementsInterface(UFP_Damageable::StaticClass()))
+	{
+		IFP_Damageable::Execute_ReceiveDamage(HitResult.GetActor(), Damage);
+	}
 }
 
 bool UFP_MeleeWeaponBase::MakeTrace(FHitResult& OutHitResult) const

@@ -33,8 +33,7 @@ public:
 	void Reload();
 
 	void Stab();
-
-
+	
 	void EquipByIndex(int32 Index);
 	void SwitchByDirection(int32 Direction);
 

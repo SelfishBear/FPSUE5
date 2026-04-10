@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Character/Zombie/FP_BaseZombie.h"
 #include "Engine/DataAsset.h"
 #include "FP_ZombieConfig.generated.h"
 
@@ -17,6 +18,9 @@ class FPSGAME_API UFP_ZombieConfig : public UDataAsset
 public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
+	EZombieType ZombieType = EZombieType::Walker;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
 	float AttackTraceDistance = 150.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
@@ -24,6 +28,12 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
 	float AttackDamage = 20.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
+	float MoveSpeed = 150.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
+	float MaxHealth = 100.0f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
 	TArray<TObjectPtr<UAnimMontage>> DeathMontages;

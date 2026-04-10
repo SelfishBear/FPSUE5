@@ -90,6 +90,9 @@ public:
 
 	virtual void ConsumeAmmo();
 	
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void GiveAmmoToWeapon(float AmmoAmount);
+	
 	/* Getters */
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE AFP_BaseCharacter* GetOwningCharacter() const { return OwningCharacter.Get(); }

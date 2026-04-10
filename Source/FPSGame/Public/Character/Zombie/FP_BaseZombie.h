@@ -8,7 +8,15 @@
 #include "FP_BaseZombie.generated.h"
 
 class UFP_ZombieConfig;
-// class UFP_AbilityComponent;
+
+UENUM(BlueprintType)
+enum class EZombieType : uint8
+{
+	Walker UMETA(DisplayName = "Walker"),
+	Runner  UMETA(DisplayName = "Runner"),
+	Tank    UMETA(DisplayName = "Tank"),
+	Crawler  UMETA(DisplayName = "Crawler"),
+};
 
 UCLASS()
 class FPSGAME_API AFP_BaseZombie : public AFP_BaseCharacter
@@ -20,24 +28,24 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UStateTreeComponent> StateTreeComponent;
-
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	// TObjectPtr<UFP_AbilityComponent> AbilityComponent;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
 	TObjectPtr<UFP_ZombieConfig> ZombieDataAsset;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Config")
 	float CurrentAttackTraceDistance;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Config")
 	float CurrentAttackRadius;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Config")
 	float CurrentAttackDamage;
 
 protected:
+	virtual void PostInitializeComponents() override;
+	
 	virtual void BeginPlay() override;
 	
+	void InitComponents();
 	void InitStats();
 };

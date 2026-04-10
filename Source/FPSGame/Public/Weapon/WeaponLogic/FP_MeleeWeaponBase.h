@@ -21,6 +21,8 @@ public:
 	
 	void MakeAttack();
 	
+	void TryApplyDamage(const FHitResult& HitResult, bool bHit);
+	
 	UFUNCTION(BlueprintPure, Category = "Melee")
 	FORCEINLINE bool CanPerformAttack() const { return bCanAttack; }
 	
