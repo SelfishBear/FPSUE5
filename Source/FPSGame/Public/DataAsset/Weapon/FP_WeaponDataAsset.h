@@ -30,25 +30,37 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	EFireMode FireMode = EFireMode::FullAuto;
-	
+
 	/*References to Visual and Logic Classes*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	TSubclassOf<AFP_WeaponVisualBase> WeaponVisualClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="WeaponSettings")
 	TSubclassOf<UFP_WeaponBase> WeaponLogicClass;
-	
+
 	/*Animations*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animations")
 	TObjectPtr<UAnimMontage> FireMontage;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Animations")
 	TObjectPtr<UAnimMontage> ReloadMontage;
-	
+
+	/*FX*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="FX")
+	TObjectPtr<UParticleSystem> MuzzleFlashFX;
+
+	/*Sounds*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Sounds")
+	TObjectPtr<USoundBase> FireSound;
+
 	/*Curve Table*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Curves")
 	TObjectPtr<UCurveTable> WeaponLevelingTable;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Curves")
 	int32 MaxLevel = 5;
+
+	/*UI*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "WeaponSettings")
+	TObjectPtr<UTexture2D> WeaponIcon;
 };

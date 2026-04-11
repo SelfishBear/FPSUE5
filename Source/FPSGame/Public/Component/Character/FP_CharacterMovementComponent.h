@@ -39,6 +39,21 @@ struct FMovementState
 	bool bSprinting = false;
 };
 
+USTRUCT(BlueprintType)
+struct FDashSettings
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Dash")
+	float DashStrength = 600.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Dash")
+	float CooldownDuration = 1.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Dash")
+	float StaminaCost = 20.0f;
+};
+
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class FPSGAME_API UFP_CharacterMovementComponent : public UCharacterMovementComponent
 {
@@ -47,17 +62,22 @@ class FPSGAME_API UFP_CharacterMovementComponent : public UCharacterMovementComp
 public:
 	UFP_CharacterMovementComponent();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
 	FMovementSettings MovementSettings;
 
-	UPROPERTY(BlueprintReadOnly, Category = "State")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "State")
 	FMovementState State;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	FDashSettings DashSettings;
 
 	UFUNCTION(BlueprintPure, Category = "Movement")
 	EMovementDirection GetMovementDirection() const;
 	
 	/** Input Handlers */
 	void Move(const FInputActionValue& Value);
+	
+	void Dash();
 
 	void StartSprinting();
 	void StopSprinting();
@@ -67,4 +87,11 @@ protected:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+private:
+	void ResetDashCooldown();
+	void UpdateFootsteps();
+	
+	bool bCanDash = true;
+	FTimerHandle DashCooldownTimer;
 };

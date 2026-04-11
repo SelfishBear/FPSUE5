@@ -4,22 +4,26 @@
 #include "Weapon/WeaponVisual/FP_WeaponVisualBase.h"
 
 #include "Character/FP_BaseCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "Weapon/WeaponLogic/FP_WeaponBase.h"
 
 AFP_WeaponVisualBase::AFP_WeaponVisualBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
+	
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	RootComponent = WeaponMesh;
+	
+	FirePosition = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FirePosition"));
+	FirePosition->SetupAttachment(WeaponMesh);
 }
 
 void AFP_WeaponVisualBase::Initialize(UFP_WeaponBase* NewWeaponLogic)
 {
 	if (!IsValid(NewWeaponLogic)) return;
-	
+
 	WeaponLogic = NewWeaponLogic;
-	
+
 	WeaponLogic->OnFire.AddDynamic(this, &AFP_WeaponVisualBase::PlayFireMontage);
 	WeaponLogic->OnReload.AddDynamic(this, &AFP_WeaponVisualBase::PlayReloadMontage);
 }
@@ -48,6 +52,26 @@ void AFP_WeaponVisualBase::PlayReloadMontage()
 	AnimInstance->Montage_Play(WeaponLogic->WeaponData->ReloadMontage, WeaponLogic->CurrentReloadTime);
 }
 
+void AFP_WeaponVisualBase::PerformFeedback()
+{
+	if (!WeaponLogic->WeaponData->MuzzleFlashFX) return;
+	if (!WeaponLogic->WeaponData->FireSound) return;
+	
+
+	UGameplayStatics::SpawnEmitterAttached(
+		WeaponLogic->WeaponData->MuzzleFlashFX,
+		FirePosition,
+		TEXT("FireSocket"),
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		FVector(FireFXScale),
+		EAttachLocation::SnapToTarget,
+		true
+	);
+	
+	UGameplayStatics::PlaySound2D(GetWorld(), WeaponLogic->WeaponData->FireSound);
+}
+
 void AFP_WeaponVisualBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (WeaponLogic.IsValid())
@@ -55,7 +79,7 @@ void AFP_WeaponVisualBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		WeaponLogic->OnFire.RemoveDynamic(this, &AFP_WeaponVisualBase::PlayFireMontage);
 		WeaponLogic->OnReload.RemoveDynamic(this, &AFP_WeaponVisualBase::PlayReloadMontage);
 	}
-	
+
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -73,6 +97,6 @@ void AFP_WeaponVisualBase::PlayShake()
 {
 	APlayerController* PC = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 	if (!IsValid(PC) || !IsValid(CameraShake)) return;
-	
+
 	PC->ClientStartCameraShake(CameraShake);
 }

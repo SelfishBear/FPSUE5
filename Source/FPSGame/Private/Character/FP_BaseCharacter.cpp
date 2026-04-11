@@ -2,6 +2,7 @@
 
 #include "Component/Character/FP_CharacterMovementComponent.h"
 #include "Component/Character/FP_HealthComponent.h"
+#include "Component/Character/FP_StaminaComponent.h"
 
 
 AFP_BaseCharacter::AFP_BaseCharacter(const FObjectInitializer& ObjectInitializer) : Super(
@@ -14,6 +15,7 @@ AFP_BaseCharacter::AFP_BaseCharacter(const FObjectInitializer& ObjectInitializer
 	check(FP_MovementComponent);
 
 	FP_HealthComponent = CreateDefaultSubobject<UFP_HealthComponent>(TEXT("FP_HealthComponent"));
+	FP_StaminaComponent = CreateDefaultSubobject<UFP_StaminaComponent>(TEXT("FP_StaminaComponent"));
 }
 
 void AFP_BaseCharacter::BeginPlay()

@@ -2,6 +2,7 @@
 
 #include "Weapon/AnimNotify/FP_AnimNotify_ReloadFinished.h"
 #include "Character/FP_PlayerCharacter.h"
+#include "Component/Character/FP_PointKillAbility.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
 #include "Weapon/WeaponLogic/FP_MeleeWeaponBase.h"
 #include "Weapon/WeaponLogic/FP_WeaponBase.h"
@@ -21,7 +22,8 @@ void UFP_AnimNotify_ReloadFinished::Notify(USkeletalMeshComponent* MeshComp, UAn
 
 	UFP_WeaponBase* Weapon = EquipManager->GetCurrentWeapon();
 	if (!IsValid(Weapon)) return;
-
+	
+	Character->GetPointKillAbilityComponent()->bCanPerformPointKill = true;
 	EquipManager->GetCurrentMeleeWeapon()->bCanAttack = true;
 	EquipManager->GetCurrentWeapon()->bCanFire = true;
 	EquipManager->GetCurrentWeapon()->bCanReload = true;

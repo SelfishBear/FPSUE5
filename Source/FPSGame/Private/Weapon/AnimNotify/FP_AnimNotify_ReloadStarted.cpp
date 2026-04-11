@@ -3,6 +3,7 @@
 #include "Weapon/AnimNotify/FP_AnimNotify_ReloadStarted.h"
 
 #include "Character/FP_PlayerCharacter.h"
+#include "Component/Character/FP_PointKillAbility.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
 #include "Weapon/WeaponLogic/FP_MeleeWeaponBase.h"
 
@@ -22,6 +23,7 @@ void UFP_AnimNotify_ReloadStarted::Notify(USkeletalMeshComponent* MeshComp, UAni
 	UFP_EquipmentManager* EquipManager = Character->GetEquipmentManager();
 	if (!IsValid(EquipManager)) return;
 
+	Character->GetPointKillAbilityComponent()->bCanPerformPointKill = false;
 	EquipManager->GetCurrentMeleeWeapon()->bCanAttack = false;
 	EquipManager->GetCurrentWeapon()->bCanFire = false;
 	EquipManager->GetCurrentWeapon()->bCanReload = false;

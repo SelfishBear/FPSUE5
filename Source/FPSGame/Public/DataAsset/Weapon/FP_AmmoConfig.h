@@ -15,7 +15,6 @@ enum class EAmmoType : uint8
 {
 	Primary UMETA(DisplayName = "Primary"),
 	Secondary UMETA(DisplayName = "Secondary"),
-	Shotgun UMETA(DisplayName = "Shotgun"),
 };
 
 UCLASS(BlueprintType)
@@ -29,6 +28,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo Config")
 	EAmmoType AmmoType = EAmmoType::Primary;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo Config")
+	TObjectPtr<UTexture2D> AmmoIcon;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ammo Config")
 	float Amount = 30;

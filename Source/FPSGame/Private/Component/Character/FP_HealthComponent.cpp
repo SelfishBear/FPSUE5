@@ -25,17 +25,18 @@ void UFP_HealthComponent::InitializeHealth()
 
 void UFP_HealthComponent::TakeDamage(float DamageAmount)
 {
-	if (!GetWorld()) return;	
-	
-	ActivateAutoHeal();
-	
+	if (!GetWorld()) return;
+
+
 	float NewHealth = FMath::Clamp(CurrentHealth - DamageAmount, 0.0f, MaxHealth);
 	if (NewHealth == CurrentHealth) return;
 
 	CurrentHealth = NewHealth;
 	OnHealthChanged.Broadcast(CurrentHealth);
-	
-	Die();
+
+	ActivateAutoHeal();
+
+	CheckDeath();
 }
 
 void UFP_HealthComponent::HandleHealTimer()
@@ -45,24 +46,30 @@ void UFP_HealthComponent::HandleHealTimer()
 
 void UFP_HealthComponent::ActivateAutoHeal()
 {
-	if(AutoHealSettings.bAutoHealEnabled)
+	if (AutoHealSettings.bAutoHealEnabled)
 	{
 		if (GetWorld()->GetTimerManager().IsTimerActive(AutoHealthTimer))
 		{
 			GetWorld()->GetTimerManager().ClearTimer(AutoHealthTimer);
 		}
-		
-		GetWorld()->GetTimerManager().SetTimer(AutoHealthTimer, this, &UFP_HealthComponent::HandleHealTimer, AutoHealSettings.HealInterval, true, AutoHealSettings.HealDelay);
+
+		GetWorld()->GetTimerManager().SetTimer(AutoHealthTimer, this, &UFP_HealthComponent::HandleHealTimer,
+		                                       AutoHealSettings.HealInterval, true, AutoHealSettings.HealDelay);
+	}
+}
+
+void UFP_HealthComponent::CheckDeath()
+{
+	if (CurrentHealth <= 0.0f && !bIsDead)
+	{
+		Die();
 	}
 }
 
 void UFP_HealthComponent::Die()
 {
-	if (CurrentHealth <= 0.0f && !bIsDead)
-	{
-		bIsDead = true;
-		OnDeath.Broadcast(bIsDead);
-	}
+	bIsDead = true;
+	OnDeath.Broadcast(bIsDead);
 }
 
 void UFP_HealthComponent::Regenerate()
@@ -70,12 +77,10 @@ void UFP_HealthComponent::Regenerate()
 	if (CurrentHealth >= MaxHealth)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(AutoHealthTimer);
+		OnHealthChanged.Broadcast(CurrentHealth);
 		return;
 	}
-	
-	float NewHealth = FMath::Clamp(CurrentHealth + AutoHealSettings.HealAmount, 0.0f, MaxHealth);
-	if (NewHealth == CurrentHealth) return;
 
-	CurrentHealth = NewHealth;
+	CurrentHealth = FMath::Clamp(CurrentHealth + AutoHealSettings.HealAmount, 0.0f, MaxHealth);
 	OnHealthChanged.Broadcast(CurrentHealth);
 }

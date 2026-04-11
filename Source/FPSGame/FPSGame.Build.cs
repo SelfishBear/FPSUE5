@@ -8,7 +8,18 @@ public class FPSGame : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "StateTreeModule", "GameplayStateTreeModule"});
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"Core", 
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"EnhancedInput",
+			"StateTreeModule",
+			"GameplayStateTreeModule",
+			"Niagara",
+			"NiagaraCore"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

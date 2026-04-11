@@ -4,6 +4,7 @@
 #include "Weapon/AnimNotify/FP_AnimNotify_MeleeShowed.h"
 
 #include "Character/FP_PlayerCharacter.h"
+#include "Component/Character/FP_PointKillAbility.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
 #include "Weapon/WeaponLogic/FP_WeaponBase.h"
 #include "Weapon/WeaponVisual/FP_MeleeWeaponVisualBase.h"
@@ -24,6 +25,7 @@ void UFP_AnimNotify_MeleeShowed::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 	UFP_EquipmentManager* EquipManager = Character->GetEquipmentManager();
 	if (!IsValid(EquipManager)) return;
 
+	Character->GetPointKillAbilityComponent()->bCanPerformPointKill = false;
 	EquipManager->GetCurrentWeaponVisual()->HideWeapon();
 	EquipManager->GetCurrentMeleeWeaponVisual()->ShowMelee();
 	EquipManager->GetCurrentWeapon()->bCanFire = false;

@@ -16,6 +16,9 @@ class FPSGAME_API AFP_WeaponVisualBase : public AActor
 public:
 	AFP_WeaponVisualBase();
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+	double FireFXScale = 0.02; 
+	
 	void Initialize(UFP_WeaponBase* NewWeaponLogic);
 
 	void ShowWeapon();
@@ -30,7 +33,7 @@ public:
 	UFUNCTION()
 	void PlayReloadMontage();
 
-	UFUNCTION(BLueprintImplementableEvent, Category = "Weapon|Visual")
+	UFUNCTION(BlueprintCallable, Category = "Weapon|Visual")
 	void PerformFeedback();
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
@@ -38,6 +41,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USceneComponent> FirePosition;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
 	TSubclassOf<UCameraShakeBase> CameraShake;

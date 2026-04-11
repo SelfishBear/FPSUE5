@@ -7,6 +7,8 @@
 #include "Component/Character/FP_CharacterMovementComponent.h"
 #include "FP_PlayerCharacter.generated.h"
 
+class UFP_AudioComponent;
+class UFP_PointKillAbility;
 class UFP_WalletComponent;
 class UFP_DynamicCameraComponent;
 class UFP_CharacterMovementComponent;
@@ -24,6 +26,9 @@ class FPSGAME_API AFP_PlayerCharacter : public AFP_BaseCharacter
 public:
 	AFP_PlayerCharacter(const FObjectInitializer& ObjectInitializer);
 	
+	UFUNCTION(BlueprintCallable, Category = "Player|SpecialAbility")
+	void PerformPointKill();
+	
 	/* Getters */
 	UFUNCTION(BlueprintPure) 
 	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
@@ -36,6 +41,12 @@ public:
 	
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UFP_WalletComponent* GetWalletComponent() const { return WalletComponent; }
+	
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE UFP_AudioComponent* GetFP_AudioComponent() const { return FP_AudioComponent; }
+	
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE UFP_PointKillAbility* GetPointKillAbilityComponent() const { return PointKillAbilityComponent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -70,6 +81,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_WalletComponent> WalletComponent;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UFP_AudioComponent> FP_AudioComponent;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UFP_PointKillAbility> PointKillAbilityComponent;
+	
 	/** Input Actions */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
@@ -85,6 +102,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> FireAction;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> DashAction;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> ReloadAction;
@@ -97,6 +117,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> StabAction;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> PointKillAction;
 
 private:
 	/** Input Handlers */
@@ -112,5 +135,10 @@ private:
 	void HandleSwitchWeaponAction(const FInputActionValue& Value);
 	void HandleScrollWeapon(const FInputActionValue& Value);
 	
+	void Dash();
+	
 	void Stab();
+	
+	UFUNCTION()
+	void CheckStamina(float NewStamina);
 };

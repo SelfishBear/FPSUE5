@@ -5,6 +5,9 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Component/Camera/FP_DynamicCameraComponent.h"
+#include "Component/Character/FP_AudioComponent.h"
+#include "Component/Character/FP_PointKillAbility.h"
+#include "Component/Character/FP_StaminaComponent.h"
 #include "Component/Character/FP_WalletComponent.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -37,11 +40,21 @@ AFP_PlayerCharacter::AFP_PlayerCharacter(const FObjectInitializer& ObjectInitial
 	DynamicCameraComponent = CreateDefaultSubobject<UFP_DynamicCameraComponent>(TEXT("DynamicCameraComponent"));
 	EquipmentManager = CreateDefaultSubobject<UFP_EquipmentManager>(TEXT("EquipmentManager"));
 	WalletComponent = CreateDefaultSubobject<UFP_WalletComponent>(TEXT("WalletComponent"));
+	PointKillAbilityComponent = CreateDefaultSubobject<UFP_PointKillAbility>(TEXT("PointKillAbilityComponent"));
+	FP_AudioComponent = CreateDefaultSubobject<UFP_AudioComponent>(TEXT("FP_AudioComponent"));
+}
+
+void AFP_PlayerCharacter::PerformPointKill()
+{
+	if (!IsValid(PointKillAbilityComponent)) return;
+	PointKillAbilityComponent->StartPointKill();
 }
 
 void AFP_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetFP_StaminaComponent()->OnStaminaChanged.AddDynamic(this, &AFP_PlayerCharacter::CheckStamina);
 }
 
 void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -66,13 +79,17 @@ void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::HandleReload);
 
+	EnhancedInput->BindAction(DashAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::Dash);
+
 	EnhancedInput->BindAction(SwitchWeaponAction, ETriggerEvent::Triggered, this,
 	                          &AFP_PlayerCharacter::HandleSwitchWeaponAction);
 
 	EnhancedInput->BindAction(ScrollWeaponAction, ETriggerEvent::Triggered, this,
 	                          &AFP_PlayerCharacter::HandleScrollWeapon);
-	
+
 	EnhancedInput->BindAction(StabAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::Stab);
+	
+	EnhancedInput->BindAction(PointKillAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::PerformPointKill);
 }
 
 void AFP_PlayerCharacter::Move(const FInputActionValue& Value)
@@ -95,21 +112,27 @@ void AFP_PlayerCharacter::Look(const FInputActionValue& Value)
 void AFP_PlayerCharacter::StartSprinting()
 {
 	if (!IsValid(FP_MovementComponent)) return;
+	if (!IsValid(FP_StaminaComponent)) return;
 
 	if (GetVelocity().IsNearlyZero()) return;
 
 	if (GetActorForwardVector().Dot(GetVelocity().GetSafeNormal()) < 0.5f) return;
 
+	if (!FP_StaminaComponent->IsEnoughStamina()) return;
+
 	DynamicCameraComponent->IncreaseFov();
 	FP_MovementComponent->StartSprinting();
+	FP_StaminaComponent->StartConsumingStamina();
 }
 
 void AFP_PlayerCharacter::StopSprinting()
 {
 	if (!IsValid(FP_MovementComponent)) return;
+	if (!IsValid(FP_StaminaComponent)) return;
 
 	DynamicCameraComponent->DecreaseFov();
 	FP_MovementComponent->StopSprinting();
+	FP_StaminaComponent->StopConsumeStamina();
 }
 
 void AFP_PlayerCharacter::StartFire()
@@ -138,7 +161,7 @@ void AFP_PlayerCharacter::HandleSwitchWeaponAction(const FInputActionValue& Valu
 	if (!IsValid(EquipmentManager)) return;
 
 	const int32 Index = FMath::RoundToInt32(Value.Get<float>());
-	
+
 	switch (Index)
 	{
 	case 1:
@@ -162,9 +185,24 @@ void AFP_PlayerCharacter::HandleScrollWeapon(const FInputActionValue& Value)
 	EquipmentManager->SwitchByDirection(Axis > 0.f ? 1 : -1);
 }
 
+void AFP_PlayerCharacter::Dash()
+{
+	if (!IsValid(FP_MovementComponent)) return;
+	if (!IsValid(FP_StaminaComponent)) return;
+	if (!FP_StaminaComponent->IsEnoughStamina()) return;
+
+	FP_MovementComponent->Dash();
+}
+
 void AFP_PlayerCharacter::Stab()
 {
 	if (!IsValid(EquipmentManager)) return;
-	
+
 	EquipmentManager->Stab();
+}
+
+void AFP_PlayerCharacter::CheckStamina(float NewStamina)
+{
+	if (GetFP_StaminaComponent()->IsEnoughStamina()) return;
+	StopSprinting();
 }

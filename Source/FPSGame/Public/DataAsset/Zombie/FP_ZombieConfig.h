@@ -28,7 +28,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
 	float AttackDamage = 20.0f;
-	
+	 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Zombie Config")
 	float MoveSpeed = 150.0f;
 	

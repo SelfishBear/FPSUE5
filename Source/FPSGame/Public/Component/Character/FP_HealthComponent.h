@@ -47,29 +47,31 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Health")
 	FAutoHealSettings AutoHealSettings;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void TakeDamage(float DamageAmount);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void Regenerate();
-	
+
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnHealthChanged OnHealthChanged;
-	
+
 	UPROPERTY(BlueprintAssignable, Category = "Health")
 	FOnDeath OnDeath;
-	
+
 protected:
 	virtual void BeginPlay() override;
-	
+
 	void InitializeHealth();
-	
+
 	void Die();
 
 	void ActivateAutoHeal();
 
 	void HandleHealTimer();
+
+	void CheckDeath();
 	
 	FTimerHandle AutoHealthTimer;
 };
