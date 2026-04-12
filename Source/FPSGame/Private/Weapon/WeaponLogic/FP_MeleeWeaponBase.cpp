@@ -5,11 +5,20 @@
 
 #include "Character/FP_BaseCharacter.h"
 #include "Component/Character/FP_CharacterMovementComponent.h"
+#include "DataAsset/Weapon/FP_MeleeWeaponDataAsset.h"
 
 void UFP_MeleeWeaponBase::PerformAttack()
 {
 	if (!CanPerformAttack()) return;
+	bCanAttack = false;
 	OnAttack.Broadcast();
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		AttackCooldownTimerHandle,
+		[this]() { bCanAttack = true; },
+		MeleeWeaponData->AttackCooldown,
+		false
+	);
 }
 
 void UFP_MeleeWeaponBase::MakeAttack()

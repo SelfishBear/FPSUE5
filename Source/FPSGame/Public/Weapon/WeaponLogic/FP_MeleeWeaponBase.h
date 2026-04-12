@@ -54,4 +54,6 @@ public:
 	
 protected:
 	virtual bool MakeTrace(FHitResult& OutHitResult) const;
+	
+	FTimerHandle AttackCooldownTimerHandle;
 };

@@ -69,7 +69,7 @@ void UFP_HealthComponent::CheckDeath()
 void UFP_HealthComponent::Die()
 {
 	bIsDead = true;
-	OnDeath.Broadcast(bIsDead);
+	OnDeath.Broadcast();
 }
 
 void UFP_HealthComponent::Regenerate()

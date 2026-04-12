@@ -33,4 +33,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Melee")
 	float AttackRadius = 50.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Melee")
+	float AttackCooldown = 1.5f;
 };

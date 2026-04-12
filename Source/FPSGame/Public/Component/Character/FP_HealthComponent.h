@@ -8,7 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, NewHealth);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, bool, bIsDead);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
 
 USTRUCT(Blueprintable)
 struct FAutoHealSettings

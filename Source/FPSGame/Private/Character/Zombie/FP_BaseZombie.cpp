@@ -32,8 +32,9 @@ void AFP_BaseZombie::BeginPlay()
 
 void AFP_BaseZombie::InitComponents()
 {
-	FP_HealthComponent->MaxHealth = ZombieDataAsset ? ZombieDataAsset->MaxHealth : FP_HealthComponent->MaxHealth;
-	FP_MovementComponent->MaxWalkSpeed = ZombieDataAsset ? ZombieDataAsset->MoveSpeed : FP_MovementComponent->MaxWalkSpeed;
+	if (!IsValid(ZombieDataAsset)) return;
+	FP_HealthComponent->MaxHealth = ZombieDataAsset->MaxHealth * HealthMultiplier;
+	FP_MovementComponent->MaxWalkSpeed = ZombieDataAsset->MoveSpeed * SpeedMultiplier;
 }
 
 void AFP_BaseZombie::InitStats()
@@ -42,5 +43,5 @@ void AFP_BaseZombie::InitStats()
 
 	CurrentAttackTraceDistance = ZombieDataAsset->AttackTraceDistance;
 	CurrentAttackRadius = ZombieDataAsset->AttackRadius;
-	CurrentAttackDamage = ZombieDataAsset->AttackDamage;
+	CurrentAttackDamage = ZombieDataAsset->AttackDamage * DamageMultiplier;
 }

@@ -40,6 +40,16 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Config")
 	float CurrentAttackDamage;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Config")
+	float CurrentMoveSpeed;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Config")
+	float CurrentMaxHealth;
+	
+	inline static float HealthMultiplier = 1.0f;
+	inline static float SpeedMultiplier	= 1.0f;
+	inline static float DamageMultiplier = 1.0f;
 
 protected:
 	virtual void PostInitializeComponents() override;

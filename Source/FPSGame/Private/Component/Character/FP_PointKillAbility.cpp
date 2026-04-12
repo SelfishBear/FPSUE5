@@ -58,7 +58,9 @@ void UFP_PointKillAbility::PerformPointKill()
 	DrawDebugLine(GetWorld(), TraceStart, bHit ? HitResult.ImpactPoint : TraceEnd,
 	              bHit ? FColor::Red : FColor::Green, false, 1.0f, 0, 1.0f);
 #endif
-
+	
+	if(!bHit) return;
+	
 	if (HitResult.GetActor()->GetClass()->ImplementsInterface(UFP_Damageable::StaticClass()))
 	{
 		IFP_Damageable::Execute_ReceiveDamage(HitResult.GetActor(), PointKillDamage);
