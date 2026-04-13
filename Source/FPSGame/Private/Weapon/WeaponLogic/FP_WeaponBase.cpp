@@ -160,7 +160,7 @@ bool UFP_WeaponBase::MakeTrace(FHitResult& OutHitResult) const
 		OutHitResult,
 		TraceStart,
 		TraceEnd,
-		ECC_Visibility,
+		ECC_Pawn,
 		QueryParams
 	);
 

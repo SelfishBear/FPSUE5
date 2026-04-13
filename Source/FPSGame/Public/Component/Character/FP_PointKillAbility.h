@@ -21,6 +21,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PointKill")
 	float PointKillCooldown = 15.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PointKill")
+	float Radius = 200.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "PointKill")
 	TObjectPtr<UAnimMontage> PointKillMontage;
@@ -38,4 +41,8 @@ public:
 
 private:
 	FTimerHandle FP_PointKillTimerHandle;
+	
+	void ApplyDamage(const TArray<FOverlapResult> &Overlaps);
+	
+	void SpawnVFX(const FHitResult& Hit);
 };
