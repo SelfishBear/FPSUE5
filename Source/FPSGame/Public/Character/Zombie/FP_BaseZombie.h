@@ -26,9 +26,6 @@ class FPSGAME_API AFP_BaseZombie : public AFP_BaseCharacter
 public:
 	AFP_BaseZombie(const FObjectInitializer& ObjectInitializer);
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UStateTreeComponent> StateTreeComponent;
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
 	TObjectPtr<UFP_ZombieConfig> ZombieDataAsset;
 	
@@ -46,6 +43,12 @@ public:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Config")
 	float CurrentMaxHealth;
+	
+	UFUNCTION(BlueprintCallable, Category = "Zombie")
+	void ReturnToBaseSpeed();
+	
+	UFUNCTION(BlueprintCallable, Category = "Zombie")
+	void SlowDown();
 	
 	inline static float HealthMultiplier = 1.0f;
 	inline static float SpeedMultiplier	= 1.0f;

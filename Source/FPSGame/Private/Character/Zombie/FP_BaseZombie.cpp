@@ -11,9 +11,7 @@
 AFP_BaseZombie::AFP_BaseZombie(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	PrimaryActorTick.bCanEverTick = true;
-
-	StateTreeComponent = CreateDefaultSubobject<UStateTreeComponent>(TEXT("StateTreeComponent"));
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void AFP_BaseZombie::PostInitializeComponents()
@@ -44,4 +42,20 @@ void AFP_BaseZombie::InitStats()
 	CurrentAttackTraceDistance = ZombieDataAsset->AttackTraceDistance;
 	CurrentAttackRadius = ZombieDataAsset->AttackRadius;
 	CurrentAttackDamage = ZombieDataAsset->AttackDamage * DamageMultiplier;
+}
+
+void AFP_BaseZombie::ReturnToBaseSpeed()
+{
+	UFP_CharacterMovementComponent* MovementComponent = GetFP_MovementComponent();
+	if (!IsValid(MovementComponent)) return;
+	
+	MovementComponent->MaxWalkSpeed = (CurrentMoveSpeed == 0.0f) ? ZombieDataAsset->MoveSpeed * SpeedMultiplier : CurrentMoveSpeed;
+}
+
+void AFP_BaseZombie::SlowDown()
+{
+	UFP_CharacterMovementComponent* MovementComponent = GetFP_MovementComponent();
+	if (!IsValid(MovementComponent)) return;
+	
+	MovementComponent->MaxWalkSpeed *= 0.5f;
 }
