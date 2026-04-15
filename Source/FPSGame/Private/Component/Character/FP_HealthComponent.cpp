@@ -4,6 +4,7 @@
 #include "Component/Character/FP_HealthComponent.h"
 
 
+
 UFP_HealthComponent::UFP_HealthComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -84,3 +85,5 @@ void UFP_HealthComponent::Regenerate()
 	CurrentHealth = FMath::Clamp(CurrentHealth + AutoHealSettings.HealAmount, 0.0f, MaxHealth);
 	OnHealthChanged.Broadcast(CurrentHealth);
 }
+
+

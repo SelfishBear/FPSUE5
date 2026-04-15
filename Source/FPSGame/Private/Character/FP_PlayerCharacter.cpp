@@ -2,6 +2,10 @@
 
 
 #include "FPSGame/Public/Character/FP_PlayerCharacter.h"
+#include "Blueprint/UserWidget.h"
+#include "Component/Character/FP_HealthComponent.h"
+#include "Core/FP_GameMode.h"
+#include "Core/FP_PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Component/Camera/FP_DynamicCameraComponent.h"
@@ -11,6 +15,7 @@
 #include "Component/Character/FP_WalletComponent.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AFP_PlayerCharacter::AFP_PlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -50,11 +55,31 @@ void AFP_PlayerCharacter::PerformPointKill()
 	PointKillAbilityComponent->StartPointKill();
 }
 
+void AFP_PlayerCharacter::HandleDeath()
+{
+	AFP_GameMode* GameMode = Cast<AFP_GameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (!GameMode) return;
+
+	AFP_PlayerController* PlayerController = Cast<AFP_PlayerController>(GetController());
+	if (!PlayerController) return;
+
+	PlayerController->DisableAllContexts();
+	PlayerController->SetShowMouseCursor(true);
+	PlayerController->SetInputMode(FInputModeGameAndUI());
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.0001f);
+
+	UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(PlayerController, GameMode->GameOverWidgetClass);
+	if (!IsValid(GameOverWidget)) return;
+	GameOverWidget->AddToViewport();
+}
+
 void AFP_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
 	GetFP_StaminaComponent()->OnStaminaChanged.AddDynamic(this, &AFP_PlayerCharacter::CheckStamina);
+	GetFP_HealthComponent()->OnDeath.AddDynamic(this, &AFP_PlayerCharacter::HandleDeath);
 }
 
 void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

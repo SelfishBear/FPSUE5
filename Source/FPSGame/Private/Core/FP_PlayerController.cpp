@@ -8,21 +8,41 @@ AFP_PlayerController::AFP_PlayerController()
 {
 }
 
+void AFP_PlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	SetStarterInputMode();
+}
+
+void AFP_PlayerController::SetStarterInputMode()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
+		GetLocalPlayer()))
+	{
+		Subsystem->ClearAllMappings();
+		Subsystem->AddMappingContext(MainPlayerMappingContext, DefaultMappingPriority);
+	}
+	
+	SetShowMouseCursor(false);
+	SetInputMode(FInputModeGameOnly());
+}
+
 void AFP_PlayerController::SwitchContext(const UInputMappingContext* ContextToActivate)
 {
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
+		GetLocalPlayer()))
 	{
 		Subsystem->ClearAllMappings();
 		Subsystem->AddMappingContext(ContextToActivate, DefaultMappingPriority);
 	}
 }
 
-void AFP_PlayerController::BeginPlay()
+void AFP_PlayerController::DisableAllContexts()
 {
-	Super::BeginPlay();
-
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
+		GetLocalPlayer()))
 	{
-		Subsystem->AddMappingContext(MainPlayerMappingContext, DefaultMappingPriority);
+		Subsystem->ClearAllMappings();
 	}
 }

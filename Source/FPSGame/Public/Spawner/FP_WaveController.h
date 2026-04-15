@@ -16,7 +16,7 @@ class AFP_ZombieSpawner;
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, BlueprintType)
 class FPSGAME_API UFP_WaveController : public UObject
 {
 	GENERATED_BODY()
@@ -37,6 +37,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Wave")
 	void StartNextWave();
 
+	UFUNCTION(BlueprintCallable, Category = "Wave")
 	void Initialize(AFP_ZombieSpawner* Spawner);
 	
 	UPROPERTY(BlueprintAssignable, Category = "Wave")

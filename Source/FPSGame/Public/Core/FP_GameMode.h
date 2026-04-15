@@ -19,15 +19,24 @@ class FPSGAME_API AFP_GameMode : public AGameModeBase
 public:
 	AFP_GameMode();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<UUserWidget> GameOverWidgetClass;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	UFP_WaveController* WaveController;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
+	UPROPERTY(BlueprintReadOnly, Category = "Spawning")
 	AFP_ZombieSpawner* ZombieSpawner;
 
-protected:
-	virtual void BeginPlay() override;
-
+	UFUNCTION(BlueprintCallable, Category = "Spawning")
 	void InitWaveController();
+
+	UFUNCTION(BlueprintCallable, Category = "Spawning")
 	void InitZombieSpawner();
+
+	UFUNCTION(BlueprintCallable, Category = "Spawning")
+	FORCEINLINE UFP_WaveController* GetWaveController() const { return WaveController; }
+
+	UFUNCTION(BlueprintCallable, Category = "Spawning")
+	FORCEINLINE AFP_ZombieSpawner* GetZombieSpawner() const { return ZombieSpawner; }
 };

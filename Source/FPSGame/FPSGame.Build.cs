@@ -18,7 +18,8 @@ public class FPSGame : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"Niagara",
-			"NiagaraCore"
+			"NiagaraCore",
+			"UMG"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

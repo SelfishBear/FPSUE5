@@ -21,9 +21,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void SwitchContext(const UInputMappingContext* ContextToActivate);
+	
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void DisableAllContexts();
 
 protected:
 	virtual void BeginPlay() override;
+	
+	void SetStarterInputMode();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> MainPlayerMappingContext;

@@ -17,21 +17,14 @@ AFP_GameMode::AFP_GameMode()
 	HUDClass = AFP_HUD::StaticClass();
 }
 
-void AFP_GameMode::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	InitZombieSpawner();
-	InitWaveController();
-}
-
 void AFP_GameMode::InitWaveController()
 {
 	WaveController = NewObject<UFP_WaveController>(this, UFP_WaveController::StaticClass());
 	WaveController->Initialize(ZombieSpawner);
 }
-
+ 
 void AFP_GameMode::InitZombieSpawner()
 {
-	ZombieSpawner = Cast<AFP_ZombieSpawner>(UGameplayStatics::GetActorOfClass(GetWorld(), AFP_ZombieSpawner::StaticClass()));
+	ZombieSpawner = Cast<AFP_ZombieSpawner>(
+		UGameplayStatics::GetActorOfClass(GetWorld(), AFP_ZombieSpawner::StaticClass()));
 }
