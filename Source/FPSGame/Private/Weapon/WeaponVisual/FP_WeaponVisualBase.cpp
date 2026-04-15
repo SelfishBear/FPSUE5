@@ -51,6 +51,19 @@ void AFP_WeaponVisualBase::PlayReloadMontage()
 
 	AnimInstance->Montage_Play(WeaponLogic->WeaponData->ReloadMontage, WeaponLogic->CurrentReloadTime);
 }
+void AFP_WeaponVisualBase::SpawnVFX_Implementation()
+{
+	UGameplayStatics::SpawnEmitterAttached(
+	WeaponLogic->WeaponData->MuzzleFlashFX,
+	FirePosition,
+	TEXT("FireSocket"),
+	FVector::ZeroVector,
+	FRotator::ZeroRotator,
+	FVector(FireFXScale),
+	EAttachLocation::SnapToTarget,
+	true
+);
+}
 
 void AFP_WeaponVisualBase::PerformFeedback()
 {
@@ -58,16 +71,7 @@ void AFP_WeaponVisualBase::PerformFeedback()
 	if (!WeaponLogic->WeaponData->FireSound) return;
 	
 
-	UGameplayStatics::SpawnEmitterAttached(
-		WeaponLogic->WeaponData->MuzzleFlashFX,
-		FirePosition,
-		TEXT("FireSocket"),
-		FVector::ZeroVector,
-		FRotator::ZeroRotator,
-		FVector(FireFXScale),
-		EAttachLocation::SnapToTarget,
-		true
-	);
+	SpawnVFX();
 	
 	UGameplayStatics::PlaySound2D(GetWorld(), WeaponLogic->WeaponData->FireSound);
 }

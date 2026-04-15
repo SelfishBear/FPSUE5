@@ -35,6 +35,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Visual")
 	void PerformFeedback();
+	
+	UFUNCTION(BlueprintNativeEvent, Category = "VFX")
+	void SpawnVFX();
+	
+	void SpawnVFX_Implementation();
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	FORCEINLINE UFP_WeaponBase* GetWeaponLogic() const { return WeaponLogic.Get(); }
