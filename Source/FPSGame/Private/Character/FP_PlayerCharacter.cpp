@@ -115,6 +115,8 @@ void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	EnhancedInput->BindAction(StabAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::Stab);
 	
 	EnhancedInput->BindAction(PointKillAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::PerformPointKill);
+	
+	EnhancedInput->BindAction(WantToStartAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::WantToStart);
 }
 
 void AFP_PlayerCharacter::Move(const FInputActionValue& Value)
@@ -230,4 +232,9 @@ void AFP_PlayerCharacter::CheckStamina(float NewStamina)
 {
 	if (GetFP_StaminaComponent()->IsEnoughStamina()) return;
 	StopSprinting();
+}
+
+void AFP_PlayerCharacter::WantToStart()
+{
+	OnWantToStart.Broadcast();
 }

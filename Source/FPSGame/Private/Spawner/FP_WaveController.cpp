@@ -60,5 +60,5 @@ void UFP_WaveController::CheckWaveCompletion()
 	if (CurrentZombiesLeft > 0) return;
 
 	ZombieSpawner->UpgradeZombies();
-	StartNextWave();
+	OnWaveCompleted.Broadcast();
 }

@@ -12,6 +12,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnZombieWaveDead, int32, LeftZombie
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWaveChanged, int32, CurrentWave);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWaveCompleted);
+
 class AFP_ZombieSpawner;
 /**
  * 
@@ -34,21 +36,24 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wave")
 	int32 CurrentZombiesLeft = 0;
 	
-	UFUNCTION(BlueprintCallable, Category = "Wave")
-	void StartNextWave();
+	UPROPERTY(BlueprintAssignable, Category = "Wave")
+	FOnZombieWaveDead OnZombieDeadDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Wave")
+	FOnZombiesWaveSpawned OnZombiesSpawnedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Wave")
+	FOnWaveChanged OnWaveChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Zombies")
+	FOnWaveCompleted OnWaveCompleted;
 
 	UFUNCTION(BlueprintCallable, Category = "Wave")
 	void Initialize(AFP_ZombieSpawner* Spawner);
 	
-	UPROPERTY(BlueprintAssignable, Category = "Wave")
-	FOnZombieWaveDead OnZombieDeadDelegate;
-	
-	UPROPERTY(BlueprintAssignable, Category = "Wave")
-	FOnZombiesWaveSpawned OnZombiesSpawnedDelegate;
-	
-	UPROPERTY(BlueprintAssignable, Category = "Wave")
-	FOnWaveChanged OnWaveChangedDelegate;
-	
+	UFUNCTION(BlueprintCallable, Category = "Wave")
+	void StartNextWave();
+
 	UFUNCTION(BlueprintCallable, Category = "Zombies")
 	void RewardPlayer();
 

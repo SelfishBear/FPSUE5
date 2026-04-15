@@ -18,6 +18,8 @@ class USpringArmComponent;
 class UInputAction;
 struct FInputActionValue;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWantToStart);
+
 UCLASS()
 class FPSGAME_API AFP_PlayerCharacter : public AFP_BaseCharacter
 {
@@ -25,28 +27,31 @@ class FPSGAME_API AFP_PlayerCharacter : public AFP_BaseCharacter
 
 public:
 	AFP_PlayerCharacter(const FObjectInitializer& ObjectInitializer);
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Player|SpecialAbility")
 	void PerformPointKill();
-	
+
 	/* Getters */
-	UFUNCTION(BlueprintPure) 
+	UFUNCTION(BlueprintPure)
 	FORCEINLINE UCameraComponent* GetPlayerCamera() const { return Camera; }
-	
+
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE USceneComponent* GetCameraOffsetRoot() const { return CameraOffsetRoot; }
 
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UFP_EquipmentManager* GetEquipmentManager() const { return EquipmentManager; }
-	
+
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UFP_WalletComponent* GetWalletComponent() const { return WalletComponent; }
-	
+
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UFP_AudioComponent* GetFP_AudioComponent() const { return FP_AudioComponent; }
-	
+
 	UFUNCTION(BlueprintPure)
 	FORCEINLINE UFP_PointKillAbility* GetPointKillAbilityComponent() const { return PointKillAbilityComponent; }
+	
+	UPROPERTY(BlueprintAssignable, Category="GameFlow")
+	FOnWantToStart OnWantToStart;
 
 protected:
 	virtual void BeginPlay() override;
@@ -55,41 +60,41 @@ protected:
 
 	UFUNCTION()
 	void HandleDeath();
-	
+
 	/** Components */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> FPSRoot;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> CameraRoot;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> CameraOffsetRoot;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UCameraComponent> Camera;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USpringArmComponent> MeshRoot;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> MeshOffsetRoot;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_DynamicCameraComponent> DynamicCameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_EquipmentManager> EquipmentManager;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_WalletComponent> WalletComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_AudioComponent> FP_AudioComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UFP_PointKillAbility> PointKillAbilityComponent;
-	
+
 	/** Input Actions */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> MoveAction;
@@ -105,7 +110,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> FireAction;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> DashAction;
 
@@ -117,12 +122,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> ScrollWeaponAction;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> StabAction;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> PointKillAction;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> WantToStartAction;
 
 private:
 	/** Input Handlers */
@@ -137,11 +145,13 @@ private:
 	void HandleReload();
 	void HandleSwitchWeaponAction(const FInputActionValue& Value);
 	void HandleScrollWeapon(const FInputActionValue& Value);
-	
+
 	void Dash();
-	
+
 	void Stab();
-	
+
+	void WantToStart();
+
 	UFUNCTION()
 	void CheckStamina(float NewStamina);
 };
