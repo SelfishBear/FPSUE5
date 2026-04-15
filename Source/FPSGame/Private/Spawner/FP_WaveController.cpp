@@ -8,8 +8,10 @@
 #include "Core/FP_GameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Spawner/FP_ZombieSpawner.h"
+#include "Subsystem/FP_MusicSubsystem.h"
 
 
+class UFP_MusicSubsystem;
 class UFP_GameInstance;
 class AFP_PlayerCharacter;
 
@@ -18,6 +20,8 @@ void UFP_WaveController::Initialize(AFP_ZombieSpawner* Spawner)
 	ZombieSpawner = Spawner;
 	ZombieSpawner->OnZombiesSpawned.AddDynamic(this, &UFP_WaveController::OnZombiesSpawned);
 	ZombieSpawner->OnZombieDead.AddDynamic(this, &UFP_WaveController::OnZombieDead);
+	
+	PlayChillMusic();
 }
 
 void UFP_WaveController::StartNextWave()
@@ -25,6 +29,8 @@ void UFP_WaveController::StartNextWave()
 	CurrentWave++;
 	ZombieSpawner->SpawnZombies();
 	OnWaveChangedDelegate.Broadcast(CurrentWave);
+	
+	PlayFightMusic();
 }
 
 void UFP_WaveController::RewardPlayer()
@@ -61,4 +67,29 @@ void UFP_WaveController::CheckWaveCompletion()
 
 	ZombieSpawner->UpgradeZombies();
 	OnWaveCompleted.Broadcast();
+	PlayChillMusic();
+}
+
+void UFP_WaveController::PlayFightMusic()
+{
+	if (!GetWorld()) return;
+
+	UFP_MusicSubsystem* MusicSubSystem = UGameplayStatics::GetGameInstance(GetWorld())->GetSubsystem<
+		UFP_MusicSubsystem>();
+
+	if (!IsValid(MusicSubSystem)) return;
+
+	MusicSubSystem->PlayFightMusic();
+}
+
+void UFP_WaveController::PlayChillMusic()
+{
+	if (!GetWorld()) return;
+
+	UFP_MusicSubsystem* MusicSubSystem = UGameplayStatics::GetGameInstance(GetWorld())->GetSubsystem<
+		UFP_MusicSubsystem>();
+
+	if (!IsValid(MusicSubSystem)) return;
+
+	MusicSubSystem->PlayChillMusic();
 }

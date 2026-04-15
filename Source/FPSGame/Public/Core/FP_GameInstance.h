@@ -17,4 +17,10 @@ class FPSGAME_API UFP_GameInstance : public UGameInstance
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
 	float DifficultyMultiplier = 1.2f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	TArray<USoundBase*> FightMusicTracks;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	TArray<USoundBase*> ChillMusicTracks;
 };

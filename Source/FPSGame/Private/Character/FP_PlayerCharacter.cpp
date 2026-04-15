@@ -16,6 +16,9 @@
 #include "Component/Inventory/FP_EquipmentManager.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Subsystem/FP_MusicSubsystem.h"
+
+class UFP_MusicSubsystem;
 
 AFP_PlayerCharacter::AFP_PlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -72,6 +75,8 @@ void AFP_PlayerCharacter::HandleDeath()
 	UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(PlayerController, GameMode->GameOverWidgetClass);
 	if (!IsValid(GameOverWidget)) return;
 	GameOverWidget->AddToViewport();
+	
+	UGameplayStatics::GetGameInstance(GetWorld())->GetSubsystem<UFP_MusicSubsystem>()->StopCurrentMusic();
 }
 
 void AFP_PlayerCharacter::BeginPlay()

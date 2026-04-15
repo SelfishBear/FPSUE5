@@ -66,4 +66,8 @@ protected:
 	
 	void CheckWaveCompletion();
 	
+	void PlayFightMusic();
+	
+	void PlayChillMusic();
+	
 };
