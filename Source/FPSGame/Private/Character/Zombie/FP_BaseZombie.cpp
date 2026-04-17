@@ -48,14 +48,24 @@ void AFP_BaseZombie::ReturnToBaseSpeed()
 {
 	UFP_CharacterMovementComponent* MovementComponent = GetFP_MovementComponent();
 	if (!IsValid(MovementComponent)) return;
-	
-	MovementComponent->MaxWalkSpeed = (CurrentMoveSpeed == 0.0f) ? ZombieDataAsset->MoveSpeed * SpeedMultiplier : CurrentMoveSpeed;
+
+	MovementComponent->MaxWalkSpeed = (CurrentMoveSpeed == 0.0f)
+		                                  ? ZombieDataAsset->MoveSpeed * SpeedMultiplier
+		                                  : CurrentMoveSpeed;
 }
 
 void AFP_BaseZombie::SlowDown()
 {
 	UFP_CharacterMovementComponent* MovementComponent = GetFP_MovementComponent();
 	if (!IsValid(MovementComponent)) return;
-	
+
 	MovementComponent->MaxWalkSpeed *= 0.5f;
+}
+
+void AFP_BaseZombie::ResetMultipliers()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[BaseZombie] ResetMultipliers called. Resetting all multipliers to 1.0f"));
+	HealthMultiplier = 1.0f;
+	SpeedMultiplier = 1.0f;
+	DamageMultiplier = 1.0f;
 }

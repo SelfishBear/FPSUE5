@@ -39,6 +39,9 @@ public:
 	TArray<TObjectPtr<USoundBase>> KillPhrases;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
+	TArray<TObjectPtr<USoundBase>> TauntPhrases;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")
 	TArray<TObjectPtr<USoundBase>> EffortSound;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components")

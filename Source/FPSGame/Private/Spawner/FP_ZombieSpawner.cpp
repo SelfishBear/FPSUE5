@@ -63,6 +63,7 @@ void AFP_ZombieSpawner::SpawnZombies()
 void AFP_ZombieSpawner::OnKilledZombie()
 {
 	ZombiesLeft--;
+	UE_LOG(LogTemp, Warning, TEXT("[ZombieSpawner] OnKilledZombie called. ZombiesLeft = %d"), ZombiesLeft);
 	OnZombieDead.Broadcast(ZombiesLeft);
 }
 
@@ -81,14 +82,22 @@ void AFP_ZombieSpawner::UpgradeZombiesType()
 	{
 		if (!AvailableZombieTypes.Contains(Type))
 		{
-			LockedZombies.Add(Type);
+			LockedZombies.AddUnique(Type);
 		}
 	}
+
+	UE_LOG(LogTemp, Warning,
+	       TEXT(
+		       "[ZombieSpawner] UpgradeZombiesType called. LockedZombies.Num() = %d, AvailableZombieTypes.Num() before = %d"
+	       ), LockedZombies.Num(), AvailableZombieTypes.Num());
 
 	if (LockedZombies.IsEmpty()) return;
 
 	const EZombieType TypeToUnlock = LockedZombies[FMath::RandRange(0, LockedZombies.Num() - 1)];
-	AvailableZombieTypes.Add(TypeToUnlock);
+	AvailableZombieTypes.AddUnique(TypeToUnlock);
+
+	UE_LOG(LogTemp, Warning, TEXT("[ZombieSpawner] UpgradeZombiesType done. AvailableZombieTypes.Num() after = %d"),
+	       AvailableZombieTypes.Num());
 }
 
 void AFP_ZombieSpawner::UpgradeZombiesAmount()
@@ -97,8 +106,7 @@ void AFP_ZombieSpawner::UpgradeZombiesAmount()
 	UFP_GameInstance* FP_GameInstance = Cast<UFP_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (!FP_GameInstance) return;
 
-
-	CurrentAmountToSpawn *= FP_GameInstance->DifficultyMultiplier;
+	CurrentAmountToSpawn = CurrentAmountToSpawn + (2 * FP_GameInstance->DifficultyMultiplier);
 }
 
 void AFP_ZombieSpawner::UpgradeZombiesStats()
@@ -107,7 +115,16 @@ void AFP_ZombieSpawner::UpgradeZombiesStats()
 	UFP_GameInstance* FP_GameInstance = Cast<UFP_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if (!FP_GameInstance) return;
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow,
+	                                 FString::Printf(
+		                                 TEXT("Upgrading zombies stats with multiplier: %f"),
+		                                 FP_GameInstance->DifficultyMultiplier));
+
 	AFP_BaseZombie::HealthMultiplier *= FP_GameInstance->DifficultyMultiplier;
 	AFP_BaseZombie::SpeedMultiplier *= FP_GameInstance->DifficultyMultiplier;
 	AFP_BaseZombie::DamageMultiplier *= FP_GameInstance->DifficultyMultiplier;
+
+	UE_LOG(LogTemp, Warning, TEXT("[ZombieSpawner] UpgradeZombiesStats done. New multipliers - Health: %f, Speed: %f, Damage: %f"), AFP_BaseZombie::HealthMultiplier, AFP_BaseZombie::SpeedMultiplier, AFP_BaseZombie::DamageMultiplier);
+	
+	
 }

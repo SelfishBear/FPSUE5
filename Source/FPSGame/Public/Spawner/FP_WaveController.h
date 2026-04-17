@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LevelSequence.h"
 #include "UObject/Object.h"
 #include "FP_WaveController.generated.h"
 
@@ -47,7 +48,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Zombies")
 	FOnWaveCompleted OnWaveCompleted;
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Wave")
 	void Initialize(AFP_ZombieSpawner* Spawner);
 	

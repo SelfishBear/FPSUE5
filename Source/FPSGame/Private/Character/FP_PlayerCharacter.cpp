@@ -8,15 +8,18 @@
 #include "Core/FP_PlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Character/Zombie/FP_BaseZombie.h"
 #include "Component/Camera/FP_DynamicCameraComponent.h"
 #include "Component/Character/FP_AudioComponent.h"
 #include "Component/Character/FP_PointKillAbility.h"
 #include "Component/Character/FP_StaminaComponent.h"
 #include "Component/Character/FP_WalletComponent.h"
 #include "Component/Inventory/FP_EquipmentManager.h"
+#include "Core/FP_GameInstance.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsystem/FP_MusicSubsystem.h"
+#include "Utils/FP_DebugHelper.h"
 
 class UFP_MusicSubsystem;
 
@@ -52,6 +55,16 @@ AFP_PlayerCharacter::AFP_PlayerCharacter(const FObjectInitializer& ObjectInitial
 	FP_AudioComponent = CreateDefaultSubobject<UFP_AudioComponent>(TEXT("FP_AudioComponent"));
 }
 
+void AFP_PlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetFP_StaminaComponent()->OnStaminaChanged.AddDynamic(this, &AFP_PlayerCharacter::CheckStamina);
+	GetFP_HealthComponent()->OnDeath.AddDynamic(this, &AFP_PlayerCharacter::HandleDeath);
+
+	SetupStarterSpeed();
+}
+
 void AFP_PlayerCharacter::PerformPointKill()
 {
 	if (!IsValid(PointKillAbilityComponent)) return;
@@ -66,6 +79,8 @@ void AFP_PlayerCharacter::HandleDeath()
 	AFP_PlayerController* PlayerController = Cast<AFP_PlayerController>(GetController());
 	if (!PlayerController) return;
 
+	FP_DebugHelper::ResetZombiesMultiplier();
+
 	PlayerController->DisableAllContexts();
 	PlayerController->SetShowMouseCursor(true);
 	PlayerController->SetInputMode(FInputModeGameAndUI());
@@ -75,16 +90,8 @@ void AFP_PlayerCharacter::HandleDeath()
 	UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(PlayerController, GameMode->GameOverWidgetClass);
 	if (!IsValid(GameOverWidget)) return;
 	GameOverWidget->AddToViewport();
-	
+
 	UGameplayStatics::GetGameInstance(GetWorld())->GetSubsystem<UFP_MusicSubsystem>()->StopCurrentMusic();
-}
-
-void AFP_PlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	GetFP_StaminaComponent()->OnStaminaChanged.AddDynamic(this, &AFP_PlayerCharacter::CheckStamina);
-	GetFP_HealthComponent()->OnDeath.AddDynamic(this, &AFP_PlayerCharacter::HandleDeath);
 }
 
 void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -118,10 +125,17 @@ void AFP_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	                          &AFP_PlayerCharacter::HandleScrollWeapon);
 
 	EnhancedInput->BindAction(StabAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::Stab);
-	
+
 	EnhancedInput->BindAction(PointKillAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::PerformPointKill);
-	
+
 	EnhancedInput->BindAction(WantToStartAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::WantToStart);
+
+	EnhancedInput->BindAction(OpenSettingsAction, ETriggerEvent::Started, this, &AFP_PlayerCharacter::OpenSettings);
+}
+
+void AFP_PlayerCharacter::SetupStarterSpeed()
+{
+	GetFP_MovementComponent()->MaxWalkSpeed = GetFP_MovementComponent()->MovementSettings.WalkSpeed;
 }
 
 void AFP_PlayerCharacter::Move(const FInputActionValue& Value)
@@ -137,8 +151,12 @@ void AFP_PlayerCharacter::Look(const FInputActionValue& Value)
 
 	if (!GetController()) return;
 
-	AddControllerYawInput(LookAxisVector.X);
-	AddControllerPitchInput(-LookAxisVector.Y);
+	UFP_GameInstance* GameInstance = Cast<UFP_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!GameInstance) return;
+
+
+	AddControllerYawInput(LookAxisVector.X * GameInstance->LookSensitivity);
+	AddControllerPitchInput(-LookAxisVector.Y * GameInstance->LookSensitivity);
 }
 
 void AFP_PlayerCharacter::StartSprinting()
@@ -237,6 +255,26 @@ void AFP_PlayerCharacter::CheckStamina(float NewStamina)
 {
 	if (GetFP_StaminaComponent()->IsEnoughStamina()) return;
 	StopSprinting();
+}
+
+void AFP_PlayerCharacter::OpenSettings()
+{
+	UFP_GameInstance* GameInstance = Cast<UFP_GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (!GameInstance) return;
+	
+	if (!bSettingsOpen)
+	{
+		PauseMenuWidget = CreateWidget(GetWorld(), GameInstance->PauseMenuWidgetClass);
+		if (!IsValid(PauseMenuWidget)) return;
+		PauseMenuWidget->AddToViewport();
+		bSettingsOpen = !bSettingsOpen;
+	}
+	else
+	{
+		if(!IsValid(PauseMenuWidget)) return;
+		bSettingsOpen = !bSettingsOpen;
+		PauseMenuWidget->RemoveFromParent();
+	}
 }
 
 void AFP_PlayerCharacter::WantToStart()

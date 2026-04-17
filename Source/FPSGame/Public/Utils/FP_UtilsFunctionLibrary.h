@@ -18,4 +18,10 @@ class FPSGAME_API UFP_UtilsFunctionLibrary : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintPure, Category = "Weapon Utils")
 	static float GetStatForLevel(UFP_WeaponDataAsset* WeaponData, FName StatName, int32 Level);
+	
+	UFUNCTION(BlueprintCallable, Category = "Graphics")
+	static void SetGraphicsQualityLow();
+	
+	UFUNCTION(BlueprintCallable, Category = "Graphics")
+	static void SetGraphicsQualityHigh();
 };

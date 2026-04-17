@@ -50,6 +50,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Zombie")
 	void SlowDown();
 	
+	static void ResetMultipliers();
+	
 	inline static float HealthMultiplier = 1.0f;
 	inline static float SpeedMultiplier	= 1.0f;
 	inline static float DamageMultiplier = 1.0f;

@@ -58,6 +58,8 @@ protected:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	void SetupStarterSpeed();
+	
 	UFUNCTION()
 	void HandleDeath();
 
@@ -131,6 +133,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<UInputAction> WantToStartAction;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<UInputAction> OpenSettingsAction;
 
 private:
 	/** Input Handlers */
@@ -154,4 +159,11 @@ private:
 
 	UFUNCTION()
 	void CheckStamina(float NewStamina);
+	
+	void OpenSettings();
+	
+	bool bSettingsOpen = false;
+	
+	UPROPERTY()
+	UUserWidget* PauseMenuWidget;
 };

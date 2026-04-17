@@ -23,7 +23,6 @@ void UFP_CharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick T
                                                          FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	UpdateFootsteps();
 }
 

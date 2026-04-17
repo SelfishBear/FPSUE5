@@ -23,4 +23,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
 	TArray<USoundBase*> ChillMusicTracks;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	TSubclassOf<UUserWidget> PauseMenuWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config")
+	float LookSensitivity = 1.0f;
 };

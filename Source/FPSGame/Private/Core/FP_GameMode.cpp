@@ -29,7 +29,6 @@ void AFP_GameMode::InitWaveController()
 {
 	WaveController = NewObject<UFP_WaveController>(this, UFP_WaveController::StaticClass());
 	WaveController->OnWaveCompleted.AddDynamic(this, &AFP_GameMode::OnWaveCompleted);
-	WaveController->Initialize(ZombieSpawner);
 }
 
 void AFP_GameMode::InitZombieSpawner()

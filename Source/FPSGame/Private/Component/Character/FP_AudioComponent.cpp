@@ -55,7 +55,7 @@ void UFP_AudioComponent::PlaySound2DCustom(USoundBase* Phrase)
 
 void UFP_AudioComponent::PlaySoundWithChance(TArray<USoundBase*> Phrases, float Chance)
 {
-	if (!RollChance(ChanceToPlayPhrase) || Phrases.Num() == 0) return;
+	if (!RollChance(Chance) || Phrases.Num() == 0) return;
 
 	USoundBase* Sound = Phrases[FMath::RandRange(0, Phrases.Num() - 1)];
 	if (!IsValid(Sound)) return;

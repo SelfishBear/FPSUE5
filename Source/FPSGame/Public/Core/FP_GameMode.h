@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "FP_GameMode.generated.h"
 
+class ULevelSequence;
 class UFP_FlowController;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStarted);
 
@@ -57,6 +58,15 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category="GameFlow")
 	FOnGameStarted OnGameStarted;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
+	int32 WaveEndEdge = 52;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
+	ULevelSequence* WaveEndSequence;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Wave")
+	TSubclassOf<AActor> MerchantClass;
 	
 	UFUNCTION()
 	void OnWaveCompleted();
